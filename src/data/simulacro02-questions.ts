@@ -1,0 +1,122 @@
+import { Question } from '../types';
+
+// =========================================================
+// SIMULACRO N°02 - ESCUELA DE OFICIALES DE LA MARINA DE GUERRA DEL PERÚ
+// BANCO 1 - 100 PREGUNTAS
+// =========================================================
+
+export const questionsSimulacro02: Question[] = [
+  // 1. RAZONAMIENTO MATEMÁTICO (001-025)
+  { id: 1, area: 'R. Matemático', question: 'Si a*b = a + b + ab. Halle 2*3', options: ['5', '6', '11', '12', '10'], correctAnswer: 2, explanation: '2*3 = 2+3+(2)(3) = 11', difficulty: 'medio' },
+  { id: 2, area: 'R. Matemático', question: 'Halle el siguiente término: 2, 5, 10, 17, 26, ...', options: ['5', '10', '17', '37', '42'], correctAnswer: 3, explanation: 'Diferencias: 3,5,7,9,11. Siguiente: 26+11=37', difficulty: 'fácil' },
+  { id: 3, area: 'R. Matemático', question: 'Complete: 3 (12) 6, 4 ( ? ) 8', options: ['16', '20', '24', '32', '28'], correctAnswer: 2, explanation: 'Regla: b = a×c - c. 4×8-8 = 24', difficulty: 'medio' },
+  { id: 4, area: 'R. Matemático', question: 'La suma de tres números consecutivos es 45. Halle el mayor.', options: ['14', '15', '16', '17', '18'], correctAnswer: 2, explanation: '3x=45, x=15. Mayor: 16', difficulty: 'fácil' },
+  { id: 5, area: 'R. Matemático', question: 'Juan tiene el doble de la edad de Pedro. Si sus edades suman 36, ¿edad de Juan?', options: ['12', '18', '24', '30', '16'], correctAnswer: 2, explanation: '2P+P=36, P=12, J=24', difficulty: 'fácil' },
+  { id: 6, area: 'R. Matemático', question: '¿Cuál es el 20% del 50% de 200?', options: ['10', '20', '30', '40', '50'], correctAnswer: 1, explanation: '50% de 200=100. 20% de 100=20', difficulty: 'fácil' },
+  { id: 7, area: 'R. Matemático', question: 'El promedio de 4 números es 15. Si se agrega 25, ¿nuevo promedio?', options: ['16', '17', '18', '19', '20'], correctAnswer: 1, explanation: 'Suma=60+25=85. 85/5=17', difficulty: 'medio' },
+  { id: 8, area: 'R. Matemático', question: 'Si 5 obreros hacen una obra en 10 días, ¿cuántos días tardarán 10 obreros?', options: ['2', '5', '10', '20', '15'], correctAnswer: 1, explanation: '5×10=10×d → d=5', difficulty: 'fácil' },
+  { id: 9, area: 'R. Matemático', question: '¿Cuánto es 3/4 de 80?', options: ['40', '50', '60', '70', '80'], correctAnswer: 2, explanation: '3/4 × 80 = 60', difficulty: 'fácil' },
+  { id: 10, area: 'R. Matemático', question: 'Dos autos al encuentro: 40 km/h y 60 km/h. Distancia 200 km. ¿Tiempo?', options: ['1h', '2h', '3h', '4h', '5h'], correctAnswer: 1, explanation: 't=200/(40+60)=2h', difficulty: 'fácil' },
+  { id: 11, area: 'R. Matemático', question: '¿Qué hora es si faltan del día la tercera parte de lo transcurrido?', options: ['12:00', '16:00', '18:00', '20:00', '14:00'], correctAnswer: 2, explanation: 't+t/3=24, t=18h', difficulty: 'medio' },
+  { id: 12, area: 'R. Matemático', question: '50 personas: 30 inglés, 25 francés, 10 ambos. ¿Cuántos ninguno?', options: ['5', '10', '15', '20', '0'], correctAnswer: 0, explanation: '|A∪B|=30+25-10=45. Ninguno: 50-45=5', difficulty: 'medio' },
+  { id: 13, area: 'R. Matemático', question: 'Ana>Betty>Carla en altura. ¿Quién es la más baja?', options: ['Ana', 'Betty', 'Carla', 'Iguales', 'Falta info'], correctAnswer: 2, explanation: 'Carla es la más baja', difficulty: 'fácil' },
+  { id: 14, area: 'R. Matemático', question: 'A dice "B miente", B dice "C miente", C dice "A y B mienten". ¿Quién dice verdad?', options: ['A', 'B', 'C', 'A y C', 'Ninguno'], correctAnswer: 0, explanation: 'Solo A dice la verdad', difficulty: 'difícil' },
+  { id: 15, area: 'R. Matemático', question: '¿Cuántos triángulos en figura con 3 líneas desde el vértice?', options: ['4', '6', '10', '12', '8'], correctAnswer: 2, explanation: 'C(5,2)=10 triángulos', difficulty: 'medio' },
+  { id: 16, area: 'R. Matemático', question: 'Área de un cuadrado de lado 6 cm.', options: ['12', '24', '36', '48', '18'], correctAnswer: 2, explanation: '6²=36 cm²', difficulty: 'fácil' },
+  { id: 17, area: 'R. Matemático', question: 'Probabilidad de par al lanzar un dado.', options: ['1/6', '1/3', '1/2', '2/3', '5/6'], correctAnswer: 2, explanation: '3/6=1/2', difficulty: 'fácil' },
+  { id: 18, area: 'R. Matemático', question: '¿De cuántas maneras se ordenan 4 personas en fila?', options: ['12', '16', '24', '48', '10'], correctAnswer: 2, explanation: '4!=24', difficulty: 'fácil' },
+  { id: 19, area: 'R. Matemático', question: 'Calcule log₂(16)', options: ['2', '3', '4', '5', '8'], correctAnswer: 2, explanation: '2⁴=16, log₂(16)=4', difficulty: 'fácil' },
+  { id: 20, area: 'R. Matemático', question: 'Complete: A, C, E, G, ...', options: ['H', 'I', 'J', 'K', 'F'], correctAnswer: 1, explanation: 'Salta una letra: I', difficulty: 'fácil' },
+  { id: 21, area: 'R. Matemático', question: 'Si a/b=2/3 y a+b=25, halle a.', options: ['5', '10', '15', '20', '12'], correctAnswer: 1, explanation: 'a=2k,b=3k. 5k=25,k=5. a=10', difficulty: 'medio' },
+  { id: 22, area: 'R. Matemático', question: 'Interés de S/1000 al 10% anual en 2 años.', options: ['100', '150', '200', '250', '300'], correctAnswer: 2, explanation: 'I=1000×0.10×2=200', difficulty: 'fácil' },
+  { id: 23, area: 'R. Matemático', question: 'Si A+A+A=15, halle A×A', options: ['10', '15', '20', '25', '30'], correctAnswer: 3, explanation: 'A=5, A²=25', difficulty: 'fácil' },
+  { id: 24, area: 'R. Matemático', question: 'Halle x. I: x+y=10. II: y=4', options: ['I sola', 'II sola', 'Ambas juntas', 'Separadas', 'Insuficiente'], correctAnswer: 2, explanation: 'Se necesitan ambas: x=6', difficulty: 'fácil' },
+  { id: 25, area: 'R. Matemático', question: 'x=5 → x=x+3 → Imprimir x', options: ['5', '3', '8', '15', '0'], correctAnswer: 2, explanation: 'x=5+3=8', difficulty: 'fácil' },
+  // 2. RAZONAMIENTO VERBAL (026-050)
+  { id: 26, area: 'R. Verbal', question: 'Sinónimo de EFÍMERO', options: ['Eterno', 'Pasajero', 'Duradero', 'Constante', 'Firme'], correctAnswer: 1, explanation: 'Efímero=pasajero', difficulty: 'fácil' },
+  { id: 27, area: 'R. Verbal', question: 'Antónimo de ALTRUISTA', options: ['Generoso', 'Egoísta', 'Solidario', 'Bondadoso', 'Amable'], correctAnswer: 1, explanation: 'Altruista↔Egoísta', difficulty: 'fácil' },
+  { id: 28, area: 'R. Verbal', question: 'PERRO : JURÍA :: AVE : ?', options: ['Bandada', 'Rebaño', 'Enjambre', 'Manada', 'Cardumen'], correctAnswer: 0, explanation: 'Colectivo de aves=bandada', difficulty: 'fácil' },
+  { id: 29, area: 'R. Verbal', question: 'El alumno ___ para el examen, obtuvo ___ nota.', options: ['estudió-mala', 'jugó-excelente', 'estudió-buena', 'durmió-alta', 'cantó-buena'], correctAnswer: 2, explanation: 'Causa-efecto coherente', difficulty: 'fácil' },
+  { id: 30, area: 'R. Verbal', question: '"La lectura estimula el cerebro y mejora la empatía." Idea principal:', options: ['Aburrida', 'Beneficios de la lectura', 'Tipos de libros', 'Cerebro', 'Empatía difícil'], correctAnswer: 1, explanation: 'Beneficios de la lectura', difficulty: 'fácil' },
+  { id: 31, area: 'R. Verbal', question: 'Excluya: LIMA, Arequipa, Trujillo, Cusco, CHILE', options: ['LIMA', 'Arequipa', 'Trujillo', 'Cusco', 'CHILE'], correctAnswer: 4, explanation: 'Chile es país, no ciudad peruana', difficulty: 'fácil' },
+  { id: 32, area: 'R. Verbal', question: 'Estudió mucho, ___ no aprobó.', options: ['porque', 'pero', 'además', 'por lo tanto', 'es decir'], correctAnswer: 1, explanation: 'Conector adversativo', difficulty: 'fácil' },
+  { id: 33, area: 'R. Verbal', question: 'Ordene: I.Nació II.Publicó III.Murió IV.Estudió', options: ['I-IV-II-III', 'I-II-IV-III', 'IV-I-II-III', 'III-II-IV-I', 'I-III-IV-II'], correctAnswer: 0, explanation: 'Orden cronológico', difficulty: 'medio' },
+  { id: 34, area: 'R. Verbal', question: 'Complete párrafo sobre calentamiento global:', options: ['Temperaturas aumentan', 'Fútbol popular', 'Comida rica', 'Autos vuelan', 'PC rápidas'], correctAnswer: 0, explanation: 'Coherente con el tema', difficulty: 'fácil' },
+  { id: 35, area: 'R. Verbal', question: 'El juez ___ la sentencia.', options: ['dijo', 'dictó', 'habló', 'puso', 'hizo'], correctAnswer: 1, explanation: 'Precisión léxica: dictar sentencia', difficulty: 'fácil' },
+  { id: 36, area: 'R. Verbal', question: 'Ordene: /el perro/corrió/en el parque/rápidamente/', options: ['El perro corrió rápidamente en el parque', 'Rápidamente el perro en el parque corrió', 'En el parque corrió perro el', 'Corrió el perro rápidamente parque', 'El perro parque en el'], correctAnswer: 0, explanation: 'Sujeto+Verbo+Adv+CC', difficulty: 'fácil' },
+  { id: 37, area: 'R. Verbal', question: 'ADOPTAR y ADAPTAR son:', options: ['Sinónimos', 'Antónimos', 'Parónimos', 'Homófonos', 'Homógrafos'], correctAnswer: 2, explanation: 'Parónimos: forma similar, significado diferente', difficulty: 'medio' },
+  { id: 38, area: 'R. Verbal', question: 'Vino (bebida) y Vino (verbo) son:', options: ['Homógrafos', 'Homófonos', 'Parónimos', 'Sinónimos', 'Antónimos'], correctAnswer: 0, explanation: 'Homógrafos: misma escritura, diferente significado', difficulty: 'medio' },
+  { id: 39, area: 'R. Verbal', question: 'La raíz "DEMO" significa:', options: ['Dios', 'Pueblo', 'Gobierno', 'Estudio', 'Tierra'], correctAnswer: 1, explanation: 'Demo=pueblo (griego)', difficulty: 'fácil' },
+  { id: 40, area: 'R. Verbal', question: 'Que ocurre cada dos años:', options: ['Bimestral', 'Bienal', 'Bimensual', 'Bianual', 'Bicentenario'], correctAnswer: 1, explanation: 'Bienal=cada 2 años', difficulty: 'fácil' },
+  { id: 41, area: 'R. Verbal', question: 'Suprima: I.Sol es estrella II.Da luz III.Luna es satélite IV.Centro del sistema', options: ['I', 'II', 'III', 'IV', 'Ninguna'], correctAnswer: 2, explanation: 'III es impertinente (habla de la luna)', difficulty: 'medio' },
+  { id: 42, area: 'R. Verbal', question: 'Texto que informa objetivamente es:', options: ['Narrativo', 'Expositivo', 'Argumentativo', 'Poético', 'Dramático'], correctAnswer: 1, explanation: 'Expositivo=informa objetivamente', difficulty: 'fácil' },
+  { id: 43, area: 'R. Verbal', question: 'Calles mojadas. Se infiere:', options: ['Día', 'Llovió', 'Calor', 'Tráfico', 'Noche'], correctAnswer: 1, explanation: 'Inferencia directa: lluvia', difficulty: 'fácil' },
+  { id: 44, area: 'R. Verbal', question: 'Artículo de opinión busca:', options: ['Entretener', 'Persuadir', 'Describir', 'Narrar', 'Definir'], correctAnswer: 1, explanation: 'Función apelativa: persuadir', difficulty: 'fácil' },
+  { id: 45, area: 'R. Verbal', question: 'MÉDICO:HOSPITAL :: PROFESOR:?', options: ['Alumno', 'Libro', 'Colegio', 'Aula', 'Pizarra'], correctAnswer: 2, explanation: 'Profesional:lugar de trabajo', difficulty: 'fácil' },
+  { id: 46, area: 'R. Verbal', question: '"Corazón de oro" es significado:', options: ['Denotativo', 'Connotativo', 'Literal', 'Científico', 'Técnico'], correctAnswer: 1, explanation: 'Connotativo=figurado', difficulty: 'fácil' },
+  { id: 47, area: 'R. Verbal', question: '"Subir arriba" es:', options: ['Solecismo', 'Pleonasmo', 'Anfibología', 'Cacofonía', 'Barbarismo'], correctAnswer: 1, explanation: 'Pleonasmo=redundancia', difficulty: 'fácil' },
+  { id: 48, area: 'R. Verbal', question: 'Palabra correcta:', options: ['Haya', 'Haiga', 'Aiga', 'Hallaed', 'Haigan'], correctAnswer: 0, explanation: 'Haya=forma correcta del subjuntivo', difficulty: 'fácil' },
+  { id: 49, area: 'R. Verbal', question: 'Texto con ideas contradictorias carece de:', options: ['Cohesión', 'Coherencia', 'Adecuación', 'Ortografía', 'Tipografía'], correctAnswer: 1, explanation: 'Coherencia=lógica sin contradicciones', difficulty: 'fácil' },
+  { id: 50, area: 'R. Verbal', question: 'Resumen debe contener:', options: ['Solo detalles', 'Ideas principales', 'Opiniones', 'Ejemplos', 'Citas largas'], correctAnswer: 1, explanation: 'Ideas principales condensadas', difficulty: 'fácil' },
+  // 3. GEOMETRÍA (051-054)
+  { id: 51, area: 'Geometría', question: 'Suma de ángulos internos de un triángulo:', options: ['90°', '180°', '270°', '360°', '120°'], correctAnswer: 1, explanation: 'Siempre 180°', difficulty: 'fácil' },
+  { id: 52, area: 'Geometría', question: 'Diagonal de rectángulo 3×4 cm:', options: ['5 cm', '6 cm', '7 cm', '8 cm', '9 cm'], correctAnswer: 0, explanation: '√(9+16)=5', difficulty: 'fácil' },
+  { id: 53, area: 'Geometría', question: 'Ángulo central 60°. Arco correspondiente:', options: ['30°', '60°', '120°', '90°', '45°'], correctAnswer: 1, explanation: 'Arco=ángulo central=60°', difficulty: 'medio' },
+  { id: 54, area: 'Geometría', question: 'Volumen de cubo de arista 3 cm:', options: ['9', '18', '27', '36', '54'], correctAnswer: 2, explanation: '3³=27 cm³', difficulty: 'fácil' },
+  // 4. ARITMÉTICA (055-058)
+  { id: 55, area: 'Aritmética', question: 'Calcule: -5+8-(-3)', options: ['0', '6', '10', '-6', '-10'], correctAnswer: 1, explanation: '-5+8+3=6', difficulty: 'fácil' },
+  { id: 56, area: 'Aritmética', question: '¿Divisible por 3?', options: ['14', '22', '27', '31', '40'], correctAnswer: 2, explanation: '2+7=9, divisible por 3', difficulty: 'fácil' },
+  { id: 57, area: 'Aritmética', question: 'MCM de 12 y 18:', options: ['6', '24', '36', '48', '72'], correctAnswer: 2, explanation: '12=2²×3, 18=2×3². MCM=2²×3²=36', difficulty: 'medio' },
+  { id: 58, area: 'Aritmética', question: 'Factores primos de 12:', options: ['1', '2', '3', '4', '6'], correctAnswer: 1, explanation: '12=2²×3, dos factores primos', difficulty: 'fácil' },
+  // 5. ÁLGEBRA (059-062)
+  { id: 59, area: 'Álgebra', question: 'Simplifique: 2³ × 2²', options: ['2⁵', '2⁶', '4⁵', '2¹', '8²'], correctAnswer: 0, explanation: 'Base igual: suma exponentes=2⁵', difficulty: 'fácil' },
+  { id: 60, area: 'Álgebra', question: 'Grado absoluto de P(x,y)=3x²y³:', options: ['2', '3', '5', '6', '1'], correctAnswer: 2, explanation: '2+3=5', difficulty: 'fácil' },
+  { id: 61, area: 'Álgebra', question: 'Desarrolle: (x+3)²', options: ['x²+9', 'x²+6x+9', 'x²+3x+9', 'x²+6', 'x²-9'], correctAnswer: 1, explanation: 'x²+2(3)x+9=x²+6x+9', difficulty: 'fácil' },
+  { id: 62, area: 'Álgebra', question: 'Resuelva: 2x+5=15', options: ['3', '5', '7', '10', '2.5'], correctAnswer: 1, explanation: '2x=10, x=5', difficulty: 'fácil' },
+  // 6. TRIGONOMETRÍA (063-066)
+  { id: 63, area: 'Trigonometría', question: '180° en radianes:', options: ['π/2', 'π', '2π', 'π/4', '3π/2'], correctAnswer: 1, explanation: '180°=π rad', difficulty: 'fácil' },
+  { id: 64, area: 'Trigonometría', question: 'sen(30°):', options: ['1/2', '√3/2', '1', '0', '√2/2'], correctAnswer: 0, explanation: 'sen30°=1/2', difficulty: 'fácil' },
+  { id: 65, area: 'Trigonometría', question: 'sen²x+cos²x:', options: ['0', '1', '2', 'tanx', 'secx'], correctAnswer: 1, explanation: 'Identidad pitagórica=1', difficulty: 'fácil' },
+  { id: 66, area: 'Trigonometría', question: 'Triángulo: opuesto=3, adyacente=4. tan(θ):', options: ['3/5', '4/5', '3/4', '4/3', '5/3'], correctAnswer: 2, explanation: 'tan=op/adj=3/4', difficulty: 'fácil' },
+  // 7. FÍSICA (067-071)
+  { id: 67, area: 'Física', question: 'Auto a 20 m/s por 5 s. Distancia:', options: ['4m', '25m', '100m', '50m', '200m'], correctAnswer: 2, explanation: 'd=20×5=100m', difficulty: 'fácil' },
+  { id: 68, area: 'Física', question: 'Reposo, a=2m/s². Velocidad a 4s:', options: ['2', '4', '6', '8', '16'], correctAnswer: 3, explanation: 'v=0+2(4)=8m/s', difficulty: 'fácil' },
+  { id: 69, area: 'Física', question: 'Fuerza para 5kg a 3m/s²:', options: ['8N', '15N', '2N', '1.6N', '25N'], correctAnswer: 1, explanation: 'F=5×3=15N', difficulty: 'fácil' },
+  { id: 70, area: 'Física', question: 'Ec de 2kg a 3m/s:', options: ['3J', '6J', '9J', '12J', '18J'], correctAnswer: 2, explanation: '½(2)(9)=9J', difficulty: 'fácil' },
+  { id: 71, area: 'Física', question: 'Presión de columna 10m (g=10, ρ=1000):', options: ['10kPa', '100kPa', '1000kPa', '1kPa', '50kPa'], correctAnswer: 1, explanation: 'P=1000×10×10=100kPa', difficulty: 'medio' },
+  // 8. QUÍMICA (072-076)
+  { id: 72, area: 'Química', question: 'Partícula positiva en el núcleo:', options: ['Electrón', 'Neutrón', 'Protón', 'Fotón', 'Positrón'], correctAnswer: 2, explanation: 'Protón=carga positiva', difficulty: 'fácil' },
+  { id: 73, area: 'Química', question: 'Na pertenece a metales:', options: ['Alcalinos', 'Alcalinotérreos', 'Halógenos', 'Gases nobles', 'Transición'], correctAnswer: 0, explanation: 'Grupo IA=alcalinos', difficulty: 'fácil' },
+  { id: 74, area: 'Química', question: 'Enlace por transferencia de electrones:', options: ['Covalente', 'Iónico', 'Metálico', 'Puente H', 'Van der Waals'], correctAnswer: 1, explanation: 'Iónico=transferencia', difficulty: 'fácil' },
+  { id: 75, area: 'Química', question: 'Coeficiente O₂ en C+O₂→CO₂:', options: ['1', '2', '3', '4', '0'], correctAnswer: 0, explanation: 'Ya balanceada, coef=1', difficulty: 'fácil' },
+  { id: 76, area: 'Química', question: 'Masa molar H₂O:', options: ['17', '18', '32', '16', '20'], correctAnswer: 1, explanation: '2(1)+16=18 g/mol', difficulty: 'fácil' },
+  // 9. LENGUA Y LITERATURA (077-080)
+  { id: 77, area: 'Lengua y Literatura', question: 'Colectivo de perro:', options: ['Arboleda', 'Jauría', 'Bandada', 'Enjambre', 'Rebaño'], correctAnswer: 1, explanation: 'Jauría=grupo de perros', difficulty: 'fácil' },
+  { id: 78, area: 'Lengua y Literatura', question: 'Palabra esdrújula:', options: ['Café', 'Árbol', 'Música', 'Pared', 'Canción'], correctAnswer: 2, explanation: 'Mú-si-ca: antepenúltima', difficulty: 'fácil' },
+  { id: 79, area: 'Lengua y Literatura', question: 'Autor de "Tradiciones Peruanas":', options: ['Vargas Llosa', 'Ricardo Palma', 'Vallejo', 'Arguedas', 'Alegría'], correctAnswer: 1, explanation: 'Ricardo Palma', difficulty: 'fácil' },
+  { id: 80, area: 'Lengua y Literatura', question: 'Autor de "La Ilíada":', options: ['Sócrates', 'Homero', 'Sófocles', 'Virgilio', 'Platón'], correctAnswer: 1, explanation: 'Homero', difficulty: 'fácil' },
+  // 10. INFORMÁTICA (081-085)
+  { id: 81, area: 'Informática', question: 'Dispositivo de salida:', options: ['Teclado', 'Mouse', 'Monitor', 'Escáner', 'Micrófono'], correctAnswer: 2, explanation: 'Monitor=muestra información', difficulty: 'fácil' },
+  { id: 82, area: 'Informática', question: 'Sistema Operativo:', options: ['Word', 'Windows', 'Excel', 'Chrome', 'PowerPoint'], correctAnswer: 1, explanation: 'Windows=SO', difficulty: 'fácil' },
+  { id: 83, area: 'Informática', question: 'WWW significa:', options: ['World Wide Web', 'World Web Wide', 'Wide World Web', 'Web World Wide', 'World Wide Word'], correctAnswer: 0, explanation: 'World Wide Web', difficulty: 'fácil' },
+  { id: 84, area: 'Informática', question: 'Atajo para copiar:', options: ['Ctrl+V', 'Ctrl+C', 'Ctrl+X', 'Ctrl+Z', 'Ctrl+P'], correctAnswer: 1, explanation: 'Ctrl+C=copiar', difficulty: 'fácil' },
+  { id: 85, area: 'Informática', question: 'Programa malicioso:', options: ['Antivirus', 'Firewall', 'Virus', 'Browser', 'Hardware'], correctAnswer: 2, explanation: 'Virus=malware', difficulty: 'fácil' },
+  // 11. HISTORIA (086-090)
+  { id: 86, area: 'Historia', question: 'Fundador del Imperio Inca:', options: ['Pachacútec', 'Manco Cápac', 'Atahualpa', 'Huascar', 'Túpac Yupanqui'], correctAnswer: 1, explanation: 'Manco Cápac (leyenda)', difficulty: 'fácil' },
+  { id: 87, area: 'Historia', question: 'Proclamó independencia del Perú (1821):', options: ['Bolívar', 'San Martín', 'Túpac Amaru', 'Sucre', 'Castilla'], correctAnswer: 1, explanation: 'José de San Martín', difficulty: 'fácil' },
+  { id: 88, area: 'Historia', question: 'Héroe Máximo de la Marina:', options: ['Ugarte', 'Miguel Grau', 'Bolognesi', 'Cáceres', 'Quiñones'], correctAnswer: 1, explanation: 'Miguel Grau Seminario', difficulty: 'fácil' },
+  { id: 89, area: 'Historia', question: 'Pirámides de Guiza:', options: ['Grecia', 'Roma', 'Egipto', 'Mesopotamia', 'China'], correctAnswer: 2, explanation: 'Civilización egipcia', difficulty: 'fácil' },
+  { id: 90, area: 'Historia', question: 'Inicio de la Primera Guerra Mundial:', options: ['1914', '1918', '1939', '1945', '1912'], correctAnswer: 0, explanation: '1914', difficulty: 'fácil' },
+  // 12. GEOGRAFÍA (091-095)
+  { id: 91, area: 'Geografía', question: 'Río más largo del Perú y del mundo:', options: ['Rímac', 'Ucayali', 'Amazonas', 'Marañón', 'Titicaca'], correctAnswer: 2, explanation: 'Río Amazonas', difficulty: 'fácil' },
+  { id: 92, area: 'Geografía', question: 'Cordillera más alta del Perú:', options: ['Blanca', 'Negra', 'Huayhuash', 'Volcánica', 'Oriental'], correctAnswer: 0, explanation: 'Cordillera Blanca', difficulty: 'fácil' },
+  { id: 93, area: 'Geografía', question: 'Mar Territorial del Perú:', options: ['12 millas', '50 millas', '100 millas', '200 millas', '500 millas'], correctAnswer: 3, explanation: '200 millas marinas', difficulty: 'fácil' },
+  { id: 94, area: 'Geografía', question: 'Corriente de aguas frías costa peruana:', options: ['Niño', 'Humboldt', 'Golfo', 'Ecuatorial', 'Brasil'], correctAnswer: 1, explanation: 'Corriente de Humboldt', difficulty: 'fácil' },
+  { id: 95, area: 'Geografía', question: 'Divide Tierra en Norte y Sur:', options: ['Greenwich', 'Ecuador', 'Cáncer', 'Capricornio', 'Polar'], correctAnswer: 1, explanation: 'Ecuador Terrestre (lat 0°)', difficulty: 'fácil' },
+  // 13. INGLÉS (096-100)
+  { id: 96, area: 'Inglés', question: 'She ___ a student.', options: ['am', 'is', 'are', 'be', 'were'], correctAnswer: 1, explanation: 'She+is', difficulty: 'fácil' },
+  { id: 97, area: 'Inglés', question: 'What day comes after Monday?', options: ['Sunday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], correctAnswer: 1, explanation: 'Tuesday', difficulty: 'fácil' },
+  { id: 98, area: 'Inglés', question: '"The cat is under the chair." Where is the cat?', options: ['On', 'Under', 'Next to', 'In', 'Behind'], correctAnswer: 1, explanation: 'Under=debajo', difficulty: 'fácil' },
+  { id: 99, area: 'Inglés', question: 'He ___ soccer every weekend.', options: ['play', 'plays', 'playing', 'played', 'is play'], correctAnswer: 1, explanation: 'He+plays (3ra persona)', difficulty: 'fácil' },
+  { id: 100, area: 'Inglés', question: 'We have class ___ 8:00 AM.', options: ['in', 'on', 'at', 'for', 'by'], correctAnswer: 2, explanation: 'at+hora específica', difficulty: 'fácil' }
+];
