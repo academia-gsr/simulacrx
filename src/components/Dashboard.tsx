@@ -216,7 +216,7 @@ const Dashboard: React.FC<DashboardProps> = ({ simulacros, isAdmin, onSelectBloc
             <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-400/20 rounded-lg">
               <p className="text-yellow-200 text-sm">
                 <strong>Estado del Proyecto:</strong> El administrador tiene acceso a todos los simulacros y bloques. 
-                Simulacro N°01 UNI: Día 1 ✓ | Día 2 ✓ | Día 3 (pendiente: 40 preguntas Física y Química).
+                Simulacro N°01 UNI: Día 1 ✓ (100 preguntas) | Día 2 ✓ (40 preguntas) | Día 3 ✓ (40 preguntas). Total: 180 preguntas completadas.
                 Simulacro N°02 ESMGP: Completo ✓.
               </p>
             </div>

@@ -1,6 +1,6 @@
 import { questionsDay1 } from './simulacro01-day1';
 import { questionsDay2 } from './simulacro01-day2';
-import { questionsDay3, day3Status } from './simulacro01-day3';
+import { questionsDay3 } from './simulacro01-day3';
 import { questionsSimulacro02 } from './simulacro02-questions';
 import { Question } from '../types';
 
@@ -69,7 +69,7 @@ export const simulacros: Simulacro[] = [
         description: 'Mecánica, Termodinámica, Electromagnetismo, Óptica, Estructura Atómica, Tabla Periódica, Enlaces, Reacciones, Estequiometría',
         questions: questionsDay3,
         duration: 60,
-        status: day3Status === 'pending' ? 'pending' : 'active',
+        status: 'active' as const,
         questionCount: 40
       }
     ]
