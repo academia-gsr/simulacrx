@@ -1,18 +1,16 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Question, StudentInfo } from '../types';
-import { questions, EXAM_CONFIG } from '../data/questions';
 
 interface ExamProps {
   studentInfo: StudentInfo;
+  questions: Question[];
   onFinish: (answers: (number | null)[], timeUsed: number) => void;
 }
 
-const EXAM_DURATION = EXAM_CONFIG.duration * 60; // duration in seconds
-
-const Exam: React.FC<ExamProps> = ({ studentInfo, onFinish }) => {
+const Exam: React.FC<ExamProps> = ({ studentInfo, questions, onFinish }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<(number | null)[]>(new Array(questions.length).fill(null));
-  const [timeRemaining, setTimeRemaining] = useState(EXAM_DURATION);
+  const [timeRemaining, setTimeRemaining] = useState(questions.length * 2 * 60); // 2 min per question
   const [showConfirm, setShowConfirm] = useState(false);
   const [showQuestionNav, setShowQuestionNav] = useState(false);
 
@@ -21,14 +19,14 @@ const Exam: React.FC<ExamProps> = ({ studentInfo, onFinish }) => {
       setTimeRemaining(prev => {
         if (prev <= 1) {
           clearInterval(timer);
-          onFinish(answers, EXAM_DURATION);
+          onFinish(answers, questions.length * 2 * 60);
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
     return () => clearInterval(timer);
-  }, [answers, onFinish]);
+  }, [answers, onFinish, questions.length]);
 
   const handleAnswer = (optionIndex: number) => {
     const newAnswers = [...answers];
@@ -37,9 +35,9 @@ const Exam: React.FC<ExamProps> = ({ studentInfo, onFinish }) => {
   };
 
   const handleFinish = useCallback(() => {
-    const timeUsed = EXAM_DURATION - timeRemaining;
+    const timeUsed = questions.length * 2 * 60 - timeRemaining;
     onFinish(answers, timeUsed);
-  }, [answers, timeRemaining, onFinish]);
+  }, [answers, timeRemaining, onFinish, questions.length]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -60,7 +58,7 @@ const Exam: React.FC<ExamProps> = ({ studentInfo, onFinish }) => {
     }
   };
 
-  const isTimeLow = timeRemaining < 300; // Less than 5 minutes
+  const isTimeLow = timeRemaining < 300;
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -70,7 +68,7 @@ const Exam: React.FC<ExamProps> = ({ studentInfo, onFinish }) => {
           <div className="flex items-center gap-3">
             <div className="hidden md:block">
               <p className="text-sm font-semibold text-gray-800">{studentInfo.name}</p>
-              <p className="text-xs text-gray-500">{EXAM_CONFIG.title} — ESMGP</p>
+              <p className="text-xs text-gray-500">SimulacrUx</p>
             </div>
           </div>
           
@@ -138,26 +136,6 @@ const Exam: React.FC<ExamProps> = ({ studentInfo, onFinish }) => {
               <div className="flex items-center gap-2">
                 <span className="w-4 h-4 bg-gray-100 rounded"></span>
                 Sin responder ({questions.length - answeredCount})
-              </div>
-            </div>
-
-            {/* Area legend */}
-            <div className="mt-6 pt-4 border-t border-gray-100">
-              <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2">Secciones</h4>
-              <div className="space-y-1 text-xs text-gray-600">
-                <p>001-025: R. Matemático</p>
-                <p>026-050: R. Verbal</p>
-                <p>051-054: Geometría</p>
-                <p>055-058: Aritmética</p>
-                <p>059-062: Álgebra</p>
-                <p>063-066: Trigonometría</p>
-                <p>067-071: Física</p>
-                <p>072-076: Química</p>
-                <p>077-080: Lengua y Lit.</p>
-                <p>081-085: Informática</p>
-                <p>086-090: Historia</p>
-                <p>091-095: Geografía</p>
-                <p>096-100: Inglés</p>
               </div>
             </div>
           </div>

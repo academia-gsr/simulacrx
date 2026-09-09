@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { StudentInfo } from '../types';
-import { questions, EXAM_CONFIG } from '../data/questions';
+import { StudentInfo, Question } from '../types';
 
 interface ResultsProps {
   studentInfo: StudentInfo;
   answers: (number | null)[];
   timeUsed: number;
+  questions: Question[];
   onRestart: () => void;
 }
 
-const Results: React.FC<ResultsProps> = ({ studentInfo, answers, timeUsed, onRestart }) => {
+const Results: React.FC<ResultsProps> = ({ studentInfo, answers, timeUsed, questions, onRestart }) => {
   const [showReview, setShowReview] = useState(false);
   const [filterArea, setFilterArea] = useState<string>('Todas');
 
@@ -66,7 +66,7 @@ const Results: React.FC<ResultsProps> = ({ studentInfo, answers, timeUsed, onRes
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
               <h1 className="text-2xl md:text-3xl font-bold">Resultados del Simulacro</h1>
-              <p className="text-blue-200 mt-1">{studentInfo.name} — {EXAM_CONFIG.subtitle}</p>
+              <p className="text-blue-200 mt-1">{studentInfo.name} — SimulacrUx</p>
             </div>
             <div className="text-right">
               <p className="text-sm text-blue-200">Tiempo utilizado</p>
@@ -166,9 +166,9 @@ const Results: React.FC<ResultsProps> = ({ studentInfo, answers, timeUsed, onRes
             className="flex-1 bg-gray-100 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-200 transition flex items-center justify-center gap-2"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1" />
             </svg>
-            Nuevo simulacro
+            Volver al inicio
           </button>
         </div>
 
@@ -251,8 +251,8 @@ const Results: React.FC<ResultsProps> = ({ studentInfo, answers, timeUsed, onRes
 
         {/* Footer */}
         <div className="text-center mt-8 pb-8 text-gray-400 text-sm">
-          <p>{EXAM_CONFIG.subtitle}</p>
-          <p className="mt-1">Proyecto: {EXAM_CONFIG.project} | Piloto v2.0</p>
+          <p>SimulacrUx — Plataforma de Simulacros de Admisión</p>
+          <p className="mt-1">4. Simulación Exámenes PRE | Piloto v2.0</p>
         </div>
       </div>
     </div>
