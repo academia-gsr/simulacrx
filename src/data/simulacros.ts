@@ -79,7 +79,7 @@ export const simulacros: Simulacro[] = [
         day: 'Día 1',
         description: 'Razonamiento Matemático, Razonamiento Verbal, Lógico-Algorítmico, Comunicación, Literatura, Historia, Geografía, Economía, Inglés, Filosofía, Lógica, Actualidad, Ciencia y Tecnología, Realidad Nacional',
         questions: questionsDay1,
-        duration: 60,
+        duration: 180,
         status: 'active',
         questionCount: 100
       },
@@ -89,7 +89,7 @@ export const simulacros: Simulacro[] = [
         day: 'Día 2',
         description: 'Aritmética, Álgebra, Geometría, Trigonometría, Nociones de Cálculo Diferencial',
         questions: questionsDay2,
-        duration: 60,
+        duration: 180,
         status: 'active',
         questionCount: 40
       },
@@ -99,7 +99,7 @@ export const simulacros: Simulacro[] = [
         day: 'Día 3',
         description: 'Mecánica, Termodinámica, Electromagnetismo, Óptica, Estructura Atómica, Tabla Periódica, Enlaces, Reacciones, Estequiometría',
         questions: questionsDay3,
-        duration: 60,
+        duration: 180,
         status: 'active',
         questionCount: 40
       }

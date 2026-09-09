@@ -1,18 +1,20 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Question, StudentInfo } from '../types';
-import { Simulacro } from '../data/simulacros';
+import { Simulacro, Block } from '../data/simulacros';
 
 interface ExamProps {
   studentInfo: StudentInfo;
   questions: Question[];
   onFinish: (answers: (number | null)[], timeUsed: number) => void;
   simulacro: Simulacro | null | undefined;
+  block: Block | null;
 }
 
-const Exam: React.FC<ExamProps> = ({ studentInfo, questions, onFinish, simulacro }) => {
+const Exam: React.FC<ExamProps> = ({ studentInfo, questions, onFinish, simulacro, block }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<(number | null)[]>(new Array(questions.length).fill(null));
-  const [timeRemaining, setTimeRemaining] = useState(questions.length * 2 * 60);
+  const EXAM_DURATION = (block?.duration || 180) * 60; // duración real del bloque en segundos
+  const [timeRemaining, setTimeRemaining] = useState(EXAM_DURATION);
   const [showConfirm, setShowConfirm] = useState(false);
   const [showQuestionNav, setShowQuestionNav] = useState(false);
 
@@ -24,14 +26,14 @@ const Exam: React.FC<ExamProps> = ({ studentInfo, questions, onFinish, simulacro
       setTimeRemaining(prev => {
         if (prev <= 1) {
           clearInterval(timer);
-          onFinish(answers, questions.length * 2 * 60);
+          onFinish(answers, EXAM_DURATION);
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
     return () => clearInterval(timer);
-  }, [answers, onFinish, questions.length]);
+  }, [answers, onFinish, EXAM_DURATION]);
 
   const handleAnswer = (optionIndex: number) => {
     const newAnswers = [...answers];
@@ -40,9 +42,9 @@ const Exam: React.FC<ExamProps> = ({ studentInfo, questions, onFinish, simulacro
   };
 
   const handleFinish = useCallback(() => {
-    const timeUsed = questions.length * 2 * 60 - timeRemaining;
+    const timeUsed = EXAM_DURATION - timeRemaining;
     onFinish(answers, timeUsed);
-  }, [answers, timeRemaining, onFinish, questions.length]);
+  }, [answers, timeRemaining, onFinish, EXAM_DURATION]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);

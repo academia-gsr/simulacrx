@@ -5,7 +5,7 @@ import Landing from './components/Landing';
 import Exam from './components/Exam';
 import Results from './components/Results';
 import { StudentInfo, User, Question } from './types';
-import { simulacros, getSimulacroById } from './data/simulacros';
+import { simulacros, getSimulacroById, Block } from './data/simulacros';
 import { getRoleInfo } from './data/users';
 
 type AppState = 'login' | 'dashboard' | 'landing' | 'exam' | 'results';
@@ -18,6 +18,7 @@ interface AppData {
   currentQuestions: Question[];
   currentSimulacroId: string;
   currentBlockId: string;
+  currentBlock: Block | null;
   originalQuestions: Question[];
 }
 
@@ -31,6 +32,7 @@ function App() {
     currentQuestions: [],
     currentSimulacroId: '',
     currentBlockId: '',
+    currentBlock: null,
     originalQuestions: [],
   });
 
@@ -61,6 +63,7 @@ function App() {
       currentQuestions: [],
       currentSimulacroId: '',
       currentBlockId: '',
+      currentBlock: null,
       originalQuestions: [],
     });
     setState('login');
@@ -83,10 +86,14 @@ function App() {
     const userRole = data.user?.role || 'guest';
     const preparedQuestions = prepareQuestions(questions, userRole);
     
+    const simulacro = getSimulacroById(simulacroId);
+    const block = simulacro?.blocks.find(b => b.id === blockId) || null;
+    
     setData(prev => ({
       ...prev,
       currentSimulacroId: simulacroId,
       currentBlockId: blockId,
+      currentBlock: block,
       currentQuestions: preparedQuestions,
       originalQuestions: questions,
     }));
@@ -112,6 +119,7 @@ function App() {
       currentQuestions: [],
       currentSimulacroId: '',
       currentBlockId: '',
+      currentBlock: null,
       originalQuestions: [],
     }));
     setState('dashboard');
@@ -119,7 +127,6 @@ function App() {
 
   const currentSimulacro = data.currentSimulacroId ? getSimulacroById(data.currentSimulacroId) : null;
   const userRole = data.user?.role || 'guest';
-  const roleInfo = getRoleInfo(userRole);
 
   return (
     <div className="min-h-screen">
@@ -142,6 +149,7 @@ function App() {
           simulacro={currentSimulacro}
           userRole={userRole}
           questionCount={data.currentQuestions.length}
+          block={data.currentBlock}
         />
       )}
 
@@ -151,6 +159,7 @@ function App() {
           questions={data.currentQuestions}
           onFinish={handleFinish}
           simulacro={currentSimulacro}
+          block={data.currentBlock}
         />
       )}
 

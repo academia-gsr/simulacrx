@@ -1,6 +1,6 @@
 import React from 'react';
 import { StudentInfo, UserRole } from '../types';
-import { Simulacro } from '../data/simulacros';
+import { Simulacro, Block } from '../data/simulacros';
 import { getRoleInfo } from '../data/users';
 
 interface LandingProps {
@@ -8,9 +8,10 @@ interface LandingProps {
   simulacro: Simulacro | null | undefined;
   userRole: UserRole;
   questionCount: number;
+  block: Block | null;
 }
 
-const Landing: React.FC<LandingProps> = ({ onStart, simulacro, userRole, questionCount }) => {
+const Landing: React.FC<LandingProps> = ({ onStart, simulacro, userRole, questionCount, block }) => {
   const [name, setName] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [phone, setPhone] = React.useState('');
@@ -68,7 +69,7 @@ const Landing: React.FC<LandingProps> = ({ onStart, simulacro, userRole, questio
             <div className="text-blue-200 text-xs mt-1">Preguntas</div>
           </div>
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10 text-center">
-            <div className="text-xl font-bold text-yellow-400">{simulacro?.blocks[0]?.duration || 60}</div>
+            <div className="text-xl font-bold text-yellow-400">{block?.duration || 60}</div>
             <div className="text-blue-200 text-xs mt-1">Minutos</div>
           </div>
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10 text-center">
