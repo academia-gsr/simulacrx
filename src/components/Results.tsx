@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { StudentInfo, Question } from '../types';
+import { StudentInfo, Question, UserRole } from '../types';
+import { Simulacro } from '../data/simulacros';
+import { getRoleInfo } from '../data/users';
 
 interface ResultsProps {
   studentInfo: StudentInfo;
@@ -7,11 +9,23 @@ interface ResultsProps {
   timeUsed: number;
   questions: Question[];
   onRestart: () => void;
+  userRole: UserRole;
+  simulacro: Simulacro | null | undefined;
 }
 
-const Results: React.FC<ResultsProps> = ({ studentInfo, answers, timeUsed, questions, onRestart }) => {
+const Results: React.FC<ResultsProps> = ({ studentInfo, answers, timeUsed, questions, onRestart, userRole, simulacro }) => {
   const [showReview, setShowReview] = useState(false);
   const [filterArea, setFilterArea] = useState<string>('Todas');
+
+  const isPlus = userRole === 'plus';
+  const isAdmin = userRole === 'admin';
+  const isBasic = userRole === 'basic';
+  const isGuest = userRole === 'guest';
+  const canSeeExplanations = isPlus || isAdmin;
+  const roleInfo = getRoleInfo(userRole);
+
+  const theme = simulacro?.theme;
+  const headerGradient = theme?.headerBg || 'from-slate-800 via-blue-900 to-slate-800';
 
   const areas = [...new Set(questions.map(q => q.area))];
 
@@ -53,20 +67,20 @@ const Results: React.FC<ResultsProps> = ({ studentInfo, answers, timeUsed, quest
   };
 
   const grade = getGrade();
-
-  const filteredQuestions = filterArea === 'Todas' 
-    ? questions 
-    : questions.filter(q => q.area === filterArea);
+  const filteredQuestions = filterArea === 'Todas' ? questions : questions.filter(q => q.area === filterArea);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-slate-800 via-blue-900 to-slate-800 text-white py-8 px-4">
+      {/* Header con colorimetría del simulacro */}
+      <div className={`bg-gradient-to-r ${headerGradient} text-white py-8 px-4`}>
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold">Resultados del Simulacro</h1>
-              <p className="text-blue-200 mt-1">{studentInfo.name} — SimulacrUx</p>
+              <h1 className="text-2xl md:text-3xl font-bold">Resultados</h1>
+              <p className="text-blue-200 mt-1">{studentInfo.name} — {simulacro?.institution || 'SimulacrUx'}</p>
+              <div className={`mt-2 inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs border ${roleInfo.bg} ${roleInfo.color} ${roleInfo.border}`}>
+                {roleInfo.icon} {roleInfo.label}
+              </div>
             </div>
             <div className="text-right">
               <p className="text-sm text-blue-200">Tiempo utilizado</p>
@@ -78,9 +92,8 @@ const Results: React.FC<ResultsProps> = ({ studentInfo, answers, timeUsed, quest
 
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Score Card */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-8">
+        <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-6">
           <div className="flex flex-col md:flex-row items-center gap-8">
-            {/* Circular Score */}
             <div className="relative">
               <svg className="w-40 h-40 transform -rotate-90">
                 <circle cx="80" cy="80" r="70" fill="none" stroke="#e5e7eb" strokeWidth="12" />
@@ -98,7 +111,6 @@ const Results: React.FC<ResultsProps> = ({ studentInfo, answers, timeUsed, quest
               </div>
             </div>
 
-            {/* Stats */}
             <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center p-3 bg-green-50 rounded-xl">
                 <p className="text-2xl font-bold text-green-600">{totalCorrect}</p>
@@ -119,7 +131,6 @@ const Results: React.FC<ResultsProps> = ({ studentInfo, answers, timeUsed, quest
             </div>
           </div>
 
-          {/* Grade Badge */}
           <div className="mt-6 text-center">
             <span className={`inline-block px-6 py-2 rounded-full text-lg font-bold ${grade.bg} ${grade.color}`}>
               {grade.label}
@@ -127,8 +138,40 @@ const Results: React.FC<ResultsProps> = ({ studentInfo, answers, timeUsed, quest
           </div>
         </div>
 
+        {/* Upgrade banners for non-PLUS users */}
+        {(isGuest || isBasic) && (
+          <div className="mb-6 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-400/30 rounded-2xl p-5">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl">💡</span>
+              <div className="flex-1">
+                <h3 className="text-yellow-800 font-bold mb-1">
+                  {isGuest ? '¡Obtén acceso completo!' : '¡Mejora a PLUS!'}
+                </h3>
+                <p className="text-yellow-700/80 text-sm mb-3">
+                  {isGuest 
+                    ? 'Acabas de ver el 10% de las preguntas. Con un plan BASIC (S/35) accedes a 1 intento, o con PLUS (S/50) tienes intentos ilimitados con explicaciones detalladas.'
+                    : 'Como usuario BASIC tienes 1 intento y no ves explicaciones. Con PLUS (S/50) obtienes intentos ilimitados y explicaciones detalladas de cada respuesta.'}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {!isBasic && (
+                    <div className="bg-white/60 rounded-lg px-3 py-2 border border-green-400/30">
+                      <p className="text-green-700 font-bold text-sm">🎯 BASIC - S/ 35</p>
+                      <p className="text-gray-600 text-xs">1 intento por bloque</p>
+                    </div>
+                  )}
+                  <div className="bg-white/60 rounded-lg px-3 py-2 border border-yellow-400/30">
+                    <p className="text-yellow-700 font-bold text-sm">⭐ PLUS - S/ 50</p>
+                    <p className="text-gray-600 text-xs">Intentos ilimitados + explicaciones</p>
+                  </div>
+                </div>
+                <p className="text-yellow-600/60 text-xs mt-2">💳 Próximamente: pagos vía PLIN o YAPE</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Score by Area */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-8">
+        <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-6">
           <h2 className="text-xl font-bold text-gray-800 mb-4">Rendimiento por Área</h2>
           <div className="space-y-4">
             {scoreByArea.map(({ area, correct, total, percentage: pct }) => (
@@ -151,16 +194,26 @@ const Results: React.FC<ResultsProps> = ({ studentInfo, answers, timeUsed, quest
         </div>
 
         {/* Actions */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-8">
-          <button
-            onClick={() => setShowReview(!showReview)}
-            className="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition flex items-center justify-center gap-2"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
-            {showReview ? 'Ocultar revisión' : 'Revisar respuestas'}
-          </button>
+        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          {/* Review button - only for PLUS and Admin */}
+          {canSeeExplanations ? (
+            <button
+              onClick={() => setShowReview(!showReview)}
+              className="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition flex items-center justify-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+              {showReview ? 'Ocultar revisión' : '📖 Revisar con explicaciones'}
+            </button>
+          ) : (
+            <div className="flex-1 bg-gray-100 border border-gray-200 text-gray-500 font-bold py-3 rounded-xl flex items-center justify-center gap-2">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+              🔒 Explicaciones no disponibles ({isGuest ? 'Invitado' : 'BASIC'})
+            </div>
+          )}
           <button
             onClick={onRestart}
             className="flex-1 bg-gray-100 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-200 transition flex items-center justify-center gap-2"
@@ -172,11 +225,11 @@ const Results: React.FC<ResultsProps> = ({ studentInfo, answers, timeUsed, quest
           </button>
         </div>
 
-        {/* Review Section */}
-        {showReview && (
+        {/* Review Section - Only visible for PLUS/Admin */}
+        {showReview && canSeeExplanations && (
           <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8">
             <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-              <h2 className="text-xl font-bold text-gray-800">Revisión de Respuestas</h2>
+              <h2 className="text-xl font-bold text-gray-800">📖 Revisión con Explicaciones</h2>
               <select
                 value={filterArea}
                 onChange={e => setFilterArea(e.target.value)}
@@ -239,7 +292,7 @@ const Results: React.FC<ResultsProps> = ({ studentInfo, answers, timeUsed, quest
 
                     <div className="ml-10 mt-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
                       <p className="text-sm text-blue-800">
-                        <strong>Explicación:</strong> {question.explanation}
+                        <strong>💡 Explicación:</strong> {question.explanation}
                       </p>
                     </div>
                   </div>
@@ -249,14 +302,37 @@ const Results: React.FC<ResultsProps> = ({ studentInfo, answers, timeUsed, quest
           </div>
         )}
 
-        {/* Footer */}
+        {/* Locked review notice for BASIC/Guest */}
+        {!canSeeExplanations && (
+          <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 text-center">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-bold text-gray-800 mb-2">
+              {isBasic ? 'Revisión no disponible en plan BASIC' : 'Revisión no disponible para invitados'}
+            </h3>
+            <p className="text-gray-500 text-sm mb-4">
+              {isBasic 
+                ? 'Las explicaciones detalladas están disponibles solo en el plan PLUS.'
+                : 'Adquiere un plan para acceder a las explicaciones del solucionario.'}
+            </p>
+            <div className="inline-block bg-yellow-50 border border-yellow-200 rounded-lg px-4 py-2">
+              <p className="text-yellow-700 text-sm font-medium">⭐ Plan PLUS: S/ 50 — Intentos ilimitados + explicaciones</p>
+            </div>
+          </div>
+        )}
+
         <div className="text-center mt-8 pb-8 text-gray-400 text-sm">
-          <p>SimulacrUx — Plataforma de Simulacros de Admisión</p>
-          <p className="mt-1">4. Simulación Exámenes PRE | Piloto v2.0</p>
+          <p>SimulacrUx — {APP_CONFIG_FULL}</p>
+          <p className="mt-1">{simulacro?.project || '4. Simulación Exámenes PRE'} | Piloto v2.1</p>
         </div>
       </div>
     </div>
   );
 };
+
+const APP_CONFIG_FULL = 'Plataforma de Simulacros de Admisión';
 
 export default Results;

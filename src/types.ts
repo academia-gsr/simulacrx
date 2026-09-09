@@ -22,3 +22,22 @@ export interface StudentInfo {
   email: string;
   phone: string;
 }
+
+export type UserRole = 'admin' | 'plus' | 'basic' | 'guest';
+
+export interface User {
+  id: string;
+  username: string;
+  password: string;
+  role: UserRole;
+  displayName: string;
+  allowedSimulacros: string[]; // IDs de simulacros permitidos
+  attempts?: { [blockId: string]: number }; // intentos por bloque
+  expiresAt?: string; // fecha de expiración para BASIC promocional
+  promoMessage?: string; // mensaje promocional
+}
+
+export interface AuthState {
+  isAuthenticated: boolean;
+  user: User | null;
+}

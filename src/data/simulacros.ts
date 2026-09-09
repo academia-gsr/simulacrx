@@ -14,8 +14,18 @@ export interface Simulacro {
   version: string;
   blocks: Block[];
   totalQuestions: number;
-  duration: number; // minutes
+  duration: number;
   status: 'active' | 'pending' | 'completed';
+  theme: SimulacroTheme;
+}
+
+export interface SimulacroTheme {
+  primary: string; // color principal (bg, botones)
+  secondary: string; // color secundario
+  accent: string; // acento
+  gradient: string; // gradiente de fondo
+  headerBg: string; // fondo del header
+  textColor: string; // color de texto principal
 }
 
 export interface Block {
@@ -24,10 +34,30 @@ export interface Block {
   day: string;
   description: string;
   questions: Question[];
-  duration: number; // minutes
+  duration: number;
   status: 'active' | 'pending';
   questionCount: number;
 }
+
+// Colorimetría UNI: Azul/Índigo (mantener la inicial)
+const uniTheme: SimulacroTheme = {
+  primary: 'from-blue-600 to-indigo-700',
+  secondary: 'blue',
+  accent: 'yellow',
+  gradient: 'from-blue-900 via-indigo-900 to-blue-800',
+  headerBg: 'from-blue-800 to-indigo-900',
+  textColor: 'text-blue-700',
+};
+
+// Colorimetría Marina/Global: Slate/Azul oscuro (mantener la actual)
+const mgpTheme: SimulacroTheme = {
+  primary: 'from-slate-700 to-blue-900',
+  secondary: 'slate',
+  accent: 'yellow',
+  gradient: 'from-slate-900 via-blue-950 to-slate-900',
+  headerBg: 'from-slate-800 via-blue-900 to-slate-800',
+  textColor: 'text-slate-700',
+};
 
 export const simulacros: Simulacro[] = [
   {
@@ -39,8 +69,9 @@ export const simulacros: Simulacro[] = [
     project: '4. Simulación Exámenes PRE',
     version: 'v1.0',
     totalQuestions: 180,
-    duration: 180, // 3 días
+    duration: 180,
     status: 'active',
+    theme: uniTheme,
     blocks: [
       {
         id: 'sim01-day1',
@@ -69,7 +100,7 @@ export const simulacros: Simulacro[] = [
         description: 'Mecánica, Termodinámica, Electromagnetismo, Óptica, Estructura Atómica, Tabla Periódica, Enlaces, Reacciones, Estequiometría',
         questions: questionsDay3,
         duration: 60,
-        status: 'active' as const,
+        status: 'active',
         questionCount: 40
       }
     ]
@@ -85,12 +116,13 @@ export const simulacros: Simulacro[] = [
     totalQuestions: 100,
     duration: 120,
     status: 'active',
+    theme: mgpTheme,
     blocks: [
       {
         id: 'sim02-block1',
         name: 'Banco 1 - Completo',
         day: 'Único',
-        description: 'Razonamiento Matemático, Razonamiento Verbal, Geometría, Aritmética, Álgebra, Trigonometría, Física, Química, Lengua y Literatura, Informática, Historia, Geografía, Inglés',
+        description: 'R. Matemático, R. Verbal, Geometría, Aritmética, Álgebra, Trigonometría, Física, Química, Lengua y Literatura, Informática, Historia, Geografía, Inglés',
         questions: questionsSimulacro02,
         duration: 120,
         status: 'active',

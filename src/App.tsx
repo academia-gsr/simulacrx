@@ -1,42 +1,94 @@
 import React, { useState } from 'react';
+import Login from './components/Login';
+import Dashboard from './components/Dashboard';
 import Landing from './components/Landing';
 import Exam from './components/Exam';
 import Results from './components/Results';
-import Dashboard from './components/Dashboard';
-import { StudentInfo } from './types';
-import { Question } from './types';
-import { APP_CONFIG, simulacros } from './data/simulacros';
+import { StudentInfo, User, Question } from './types';
+import { simulacros, getSimulacroById } from './data/simulacros';
+import { getRoleInfo } from './data/users';
 
-type AppState = 'dashboard' | 'landing' | 'exam' | 'results';
+type AppState = 'login' | 'dashboard' | 'landing' | 'exam' | 'results';
 
 interface AppData {
+  user: User | null;
   studentInfo: StudentInfo | null;
   answers: (number | null)[];
   timeUsed: number;
   currentQuestions: Question[];
   currentSimulacroId: string;
   currentBlockId: string;
-  isAdmin: boolean;
+  originalQuestions: Question[];
 }
 
 function App() {
-  const [state, setState] = useState<AppState>('dashboard');
+  const [state, setState] = useState<AppState>('login');
   const [data, setData] = useState<AppData>({
+    user: null,
     studentInfo: null,
     answers: [],
     timeUsed: 0,
     currentQuestions: [],
     currentSimulacroId: '',
     currentBlockId: '',
-    isAdmin: false
+    originalQuestions: [],
   });
 
+  const handleLogin = (user: User) => {
+    setData(prev => ({ ...prev, user }));
+    setState('dashboard');
+  };
+
+  const handleContinueAsGuest = () => {
+    const guestUser: User = {
+      id: 'guest-' + Date.now(),
+      username: 'guest',
+      password: '',
+      role: 'guest',
+      displayName: 'Invitado',
+      allowedSimulacros: ['sim01', 'sim02'],
+    };
+    setData(prev => ({ ...prev, user: guestUser }));
+    setState('dashboard');
+  };
+
+  const handleLogout = () => {
+    setData({
+      user: null,
+      studentInfo: null,
+      answers: [],
+      timeUsed: 0,
+      currentQuestions: [],
+      currentSimulacroId: '',
+      currentBlockId: '',
+      originalQuestions: [],
+    });
+    setState('login');
+  };
+
+  const prepareQuestions = (questions: Question[], userRole: string): Question[] => {
+    // Reordenar aleatoriamente manteniendo numeración ascendente visual
+    const shuffled = [...questions].sort(() => Math.random() - 0.5);
+    
+    if (userRole === 'guest') {
+      // Invitados: solo 10% de preguntas
+      const count = Math.ceil(shuffled.length * 0.1);
+      return shuffled.slice(0, count);
+    }
+    
+    return shuffled;
+  };
+
   const handleSelectBlock = (simulacroId: string, blockId: string, questions: Question[]) => {
+    const userRole = data.user?.role || 'guest';
+    const preparedQuestions = prepareQuestions(questions, userRole);
+    
     setData(prev => ({
       ...prev,
       currentSimulacroId: simulacroId,
       currentBlockId: blockId,
-      currentQuestions: questions
+      currentQuestions: preparedQuestions,
+      originalQuestions: questions,
     }));
     setState('landing');
   };
@@ -52,50 +104,56 @@ function App() {
   };
 
   const handleRestart = () => {
-    setData({
+    setData(prev => ({
+      ...prev,
       studentInfo: null,
       answers: [],
       timeUsed: 0,
       currentQuestions: [],
       currentSimulacroId: '',
       currentBlockId: '',
-      isAdmin: data.isAdmin
-    });
+      originalQuestions: [],
+    }));
     setState('dashboard');
   };
 
-  const handleAdminLogin = () => {
-    setData(prev => ({ ...prev, isAdmin: true }));
-  };
+  const currentSimulacro = data.currentSimulacroId ? getSimulacroById(data.currentSimulacroId) : null;
+  const userRole = data.user?.role || 'guest';
+  const roleInfo = getRoleInfo(userRole);
 
   return (
     <div className="min-h-screen">
-      {/* Header global */}
-      {state !== 'dashboard' && (
-        <div className="bg-slate-900 text-white py-2 px-4 text-center text-xs">
-          <span className="font-bold text-yellow-400">{APP_CONFIG.name}</span>
-          <span className="text-slate-400 ml-2">| {APP_CONFIG.project}</span>
-        </div>
+      {state === 'login' && (
+        <Login onLogin={handleLogin} onContinueAsGuest={handleContinueAsGuest} />
       )}
-
+      
       {state === 'dashboard' && (
         <Dashboard
           simulacros={simulacros}
-          isAdmin={data.isAdmin}
+          user={data.user}
           onSelectBlock={handleSelectBlock}
-          onAdminLogin={handleAdminLogin}
+          onLogout={handleLogout}
         />
       )}
+
       {state === 'landing' && data.currentQuestions.length > 0 && (
-        <Landing onStart={handleStart} />
+        <Landing
+          onStart={handleStart}
+          simulacro={currentSimulacro}
+          userRole={userRole}
+          questionCount={data.currentQuestions.length}
+        />
       )}
+
       {state === 'exam' && data.studentInfo && data.currentQuestions.length > 0 && (
         <Exam
           studentInfo={data.studentInfo}
           questions={data.currentQuestions}
           onFinish={handleFinish}
+          simulacro={currentSimulacro}
         />
       )}
+
       {state === 'results' && data.studentInfo && data.currentQuestions.length > 0 && (
         <Results
           studentInfo={data.studentInfo}
@@ -103,6 +161,8 @@ function App() {
           timeUsed={data.timeUsed}
           questions={data.currentQuestions}
           onRestart={handleRestart}
+          userRole={userRole}
+          simulacro={currentSimulacro}
         />
       )}
     </div>

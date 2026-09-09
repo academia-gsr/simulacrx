@@ -1,18 +1,23 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Question, StudentInfo } from '../types';
+import { Simulacro } from '../data/simulacros';
 
 interface ExamProps {
   studentInfo: StudentInfo;
   questions: Question[];
   onFinish: (answers: (number | null)[], timeUsed: number) => void;
+  simulacro: Simulacro | null | undefined;
 }
 
-const Exam: React.FC<ExamProps> = ({ studentInfo, questions, onFinish }) => {
+const Exam: React.FC<ExamProps> = ({ studentInfo, questions, onFinish, simulacro }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<(number | null)[]>(new Array(questions.length).fill(null));
-  const [timeRemaining, setTimeRemaining] = useState(questions.length * 2 * 60); // 2 min per question
+  const [timeRemaining, setTimeRemaining] = useState(questions.length * 2 * 60);
   const [showConfirm, setShowConfirm] = useState(false);
   const [showQuestionNav, setShowQuestionNav] = useState(false);
+
+  const theme = simulacro?.theme;
+  const gradientClass = theme?.headerBg || 'from-slate-800 via-blue-900 to-slate-800';
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -62,17 +67,17 @@ const Exam: React.FC<ExamProps> = ({ studentInfo, questions, onFinish }) => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Top Bar */}
-      <div className="bg-white shadow-sm border-b sticky top-0 z-50">
+      {/* Top Bar con colorimetría del simulacro */}
+      <div className={`bg-gradient-to-r ${gradientClass} text-white shadow-sm sticky top-0 z-50`}>
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="hidden md:block">
-              <p className="text-sm font-semibold text-gray-800">{studentInfo.name}</p>
-              <p className="text-xs text-gray-500">SimulacrUx</p>
+              <p className="text-sm font-semibold">{studentInfo.name}</p>
+              <p className="text-xs text-white/70">{simulacro?.institution || 'SimulacrUx'}</p>
             </div>
           </div>
           
-          <div className={`flex items-center gap-2 px-4 py-2 rounded-full font-mono font-bold text-lg ${isTimeLow ? 'bg-red-100 text-red-700 animate-pulse' : 'bg-blue-100 text-blue-700'}`}>
+          <div className={`flex items-center gap-2 px-4 py-2 rounded-full font-mono font-bold text-lg ${isTimeLow ? 'bg-red-500/30 text-red-200 animate-pulse' : 'bg-white/20 text-white'}`}>
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
@@ -82,7 +87,7 @@ const Exam: React.FC<ExamProps> = ({ studentInfo, questions, onFinish }) => {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setShowQuestionNav(!showQuestionNav)}
-              className="md:hidden bg-gray-100 p-2 rounded-lg"
+              className="md:hidden bg-white/20 p-2 rounded-lg"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -98,19 +103,19 @@ const Exam: React.FC<ExamProps> = ({ studentInfo, questions, onFinish }) => {
         </div>
         
         {/* Progress Bar */}
-        <div className="h-1 bg-gray-100">
+        <div className="h-1 bg-black/20">
           <div 
-            className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all duration-300"
+            className="h-full bg-yellow-400 transition-all duration-300"
             style={{ width: `${progress}%` }}
           />
         </div>
       </div>
 
       <div className="flex-1 flex">
-        {/* Sidebar - Question Navigator (Desktop) */}
+        {/* Sidebar */}
         <div className="hidden md:block w-72 bg-white border-r overflow-y-auto">
           <div className="p-4">
-            <h3 className="font-semibold text-gray-700 mb-3 text-sm">Navegación de Preguntas</h3>
+            <h3 className="font-semibold text-gray-700 mb-3 text-sm">Navegación</h3>
             <div className="grid grid-cols-5 gap-2">
               {questions.map((_, idx) => (
                 <button
@@ -118,7 +123,7 @@ const Exam: React.FC<ExamProps> = ({ studentInfo, questions, onFinish }) => {
                   onClick={() => setCurrentQuestion(idx)}
                   className={`w-10 h-10 rounded-lg text-xs font-medium transition-all ${
                     idx === currentQuestion
-                      ? 'bg-blue-600 text-white shadow-md scale-110'
+                      ? `bg-gradient-to-br ${simulacro?.theme.primary || 'from-blue-600 to-indigo-600'} text-white shadow-md scale-110`
                       : answers[idx] !== null
                       ? 'bg-green-100 text-green-700 border border-green-200'
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -141,7 +146,7 @@ const Exam: React.FC<ExamProps> = ({ studentInfo, questions, onFinish }) => {
           </div>
         </div>
 
-        {/* Mobile Question Nav Overlay */}
+        {/* Mobile Nav */}
         {showQuestionNav && (
           <div className="fixed inset-0 z-50 bg-black/50 md:hidden" onClick={() => setShowQuestionNav(false)}>
             <div className="absolute right-0 top-0 bottom-0 w-80 bg-white p-4 overflow-y-auto" onClick={e => e.stopPropagation()}>
@@ -151,12 +156,8 @@ const Exam: React.FC<ExamProps> = ({ studentInfo, questions, onFinish }) => {
                   <button
                     key={idx}
                     onClick={() => { setCurrentQuestion(idx); setShowQuestionNav(false); }}
-                    className={`w-10 h-10 rounded-lg text-xs font-medium transition-all ${
-                      idx === currentQuestion
-                        ? 'bg-blue-600 text-white'
-                        : answers[idx] !== null
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-gray-100 text-gray-600'
+                    className={`w-10 h-10 rounded-lg text-xs font-medium ${
+                      idx === currentQuestion ? 'bg-blue-600 text-white' : answers[idx] !== null ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
                     }`}
                   >
                     {idx + 1}
@@ -169,10 +170,9 @@ const Exam: React.FC<ExamProps> = ({ studentInfo, questions, onFinish }) => {
 
         {/* Main Content */}
         <div className="flex-1 p-4 md:p-8 max-w-3xl mx-auto w-full">
-          {/* Question Header */}
           <div className="mb-6">
             <div className="flex items-center gap-3 mb-3 flex-wrap">
-              <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
+              <span className={`${simulacro?.institution === 'UNI' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-700'} px-3 py-1 rounded-full text-sm font-medium`}>
                 Pregunta {currentQuestion + 1} de {questions.length}
               </span>
               <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getDifficultyColor(question.difficulty)}`}>
@@ -184,14 +184,12 @@ const Exam: React.FC<ExamProps> = ({ studentInfo, questions, onFinish }) => {
             </div>
           </div>
 
-          {/* Question */}
           <div className="bg-white rounded-xl shadow-sm border p-6 mb-6">
             <p className="text-lg text-gray-800 leading-relaxed font-medium">
               {question.question}
             </p>
           </div>
 
-          {/* Options */}
           <div className="space-y-3 mb-8">
             {question.options.map((option, idx) => (
               <button
@@ -199,7 +197,7 @@ const Exam: React.FC<ExamProps> = ({ studentInfo, questions, onFinish }) => {
                 onClick={() => handleAnswer(idx)}
                 className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
                   answers[currentQuestion] === idx
-                    ? 'border-blue-500 bg-blue-50 shadow-md'
+                    ? `border-blue-500 ${simulacro?.institution === 'UNI' ? 'bg-blue-50' : 'bg-slate-50'} shadow-md`
                     : 'border-gray-200 bg-white hover:border-blue-300 hover:bg-blue-50/50'
                 }`}
               >
@@ -219,7 +217,6 @@ const Exam: React.FC<ExamProps> = ({ studentInfo, questions, onFinish }) => {
             ))}
           </div>
 
-          {/* Navigation */}
           <div className="flex items-center justify-between">
             <button
               onClick={() => setCurrentQuestion(Math.max(0, currentQuestion - 1))}
@@ -233,13 +230,13 @@ const Exam: React.FC<ExamProps> = ({ studentInfo, questions, onFinish }) => {
             </button>
 
             <span className="text-sm text-gray-500">
-              {answeredCount}/{questions.length} respondidas
+              {answeredCount}/{questions.length}
             </span>
 
             {currentQuestion < questions.length - 1 ? (
               <button
                 onClick={() => setCurrentQuestion(currentQuestion + 1)}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition font-medium"
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r ${simulacro?.theme.primary || 'from-blue-600 to-indigo-600'} text-white hover:opacity-90 transition font-medium`}
               >
                 Siguiente
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -273,22 +270,16 @@ const Exam: React.FC<ExamProps> = ({ studentInfo, questions, onFinish }) => {
                 Ha respondido <strong>{answeredCount}</strong> de {questions.length} preguntas.
                 {answeredCount < questions.length && (
                   <span className="text-red-500 block mt-1">
-                    ⚠️ Tiene {questions.length - answeredCount} preguntas sin responder.
+                    ⚠️ {questions.length - answeredCount} sin responder.
                   </span>
                 )}
               </p>
             </div>
             <div className="flex gap-3">
-              <button
-                onClick={() => setShowConfirm(false)}
-                className="flex-1 px-4 py-3 rounded-lg border border-gray-200 text-gray-700 font-medium hover:bg-gray-50 transition"
-              >
+              <button onClick={() => setShowConfirm(false)} className="flex-1 px-4 py-3 rounded-lg border border-gray-200 text-gray-700 font-medium hover:bg-gray-50 transition">
                 Seguir
               </button>
-              <button
-                onClick={handleFinish}
-                className="flex-1 px-4 py-3 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition"
-              >
+              <button onClick={handleFinish} className="flex-1 px-4 py-3 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition">
                 Terminar
               </button>
             </div>
