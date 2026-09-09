@@ -8,9 +8,10 @@ interface DashboardProps {
   user: User | null;
   onSelectBlock: (simulacroId: string, blockId: string, questions: Question[]) => void;
   onLogout: () => void;
+  onOpenProfile: () => void;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ simulacros, user, onSelectBlock, onLogout }) => {
+const Dashboard: React.FC<DashboardProps> = ({ simulacros, user, onSelectBlock, onLogout, onOpenProfile }) => {
   const [selectedSimulacro, setSelectedSimulacro] = useState<string | null>(null);
   const roleInfo = user ? getRoleInfo(user.role) : getRoleInfo('guest');
   const isGuest = !user || user.role === 'guest';
@@ -30,8 +31,8 @@ const Dashboard: React.FC<DashboardProps> = ({ simulacros, user, onSelectBlock, 
     if (user?.role === 'plus') return true;
     if (user?.role === 'basic') {
       // BASIC tiene 1 intento
-      const attempts = user.attempts?.[block.id] || 0;
-      return attempts < 1;
+      const blockAttempts = user.attempts.filter(a => a.blockId === block.id).length;
+      return blockAttempts < 1;
     }
     return false;
   };
@@ -39,8 +40,8 @@ const Dashboard: React.FC<DashboardProps> = ({ simulacros, user, onSelectBlock, 
   const getAttemptsInfo = (block: Block): string | null => {
     if (!user || user.role === 'admin' || user.role === 'plus' || isGuest) return null;
     if (user.role === 'basic') {
-      const attempts = user.attempts?.[block.id] || 0;
-      if (attempts >= 1) return 'Ya utilizado';
+      const blockAttempts = user.attempts.filter(a => a.blockId === block.id).length;
+      if (blockAttempts >= 1) return 'Ya utilizado';
       return '1 intento disponible';
     }
     return null;
@@ -78,6 +79,16 @@ const Dashboard: React.FC<DashboardProps> = ({ simulacros, user, onSelectBlock, 
                 <p className="text-xs text-blue-300">@{user.username}</p>
               </div>
             )}
+            <button
+              onClick={onOpenProfile}
+              className="bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg text-sm transition flex items-center gap-1"
+              title="Mi Perfil"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              <span className="hidden md:inline">Mi Perfil</span>
+            </button>
             <button
               onClick={onLogout}
               className="bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg text-sm transition flex items-center gap-1"

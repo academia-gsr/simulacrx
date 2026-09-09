@@ -17,13 +17,26 @@ export interface ExamState {
   finishedAt: Date | null;
 }
 
-export interface StudentInfo {
-  name: string;
-  email: string;
+export interface UserProfile {
+  fullName: string;
   phone: string;
+  email: string;
 }
 
 export type UserRole = 'admin' | 'plus' | 'basic' | 'guest';
+
+export interface Attempt {
+  id: string;
+  blockId: string;
+  simulacroId: string;
+  date: string; // ISO string
+  answers: (number | null)[];
+  timeUsed: number; // segundos
+  score: number; // porcentaje
+  correct: number;
+  total: number;
+  questionOrder: number[]; // IDs de preguntas en el orden que se presentaron
+}
 
 export interface User {
   id: string;
@@ -31,10 +44,11 @@ export interface User {
   password: string;
   role: UserRole;
   displayName: string;
-  allowedSimulacros: string[]; // IDs de simulacros permitidos
-  attempts?: { [blockId: string]: number }; // intentos por bloque
-  expiresAt?: string; // fecha de expiración para BASIC promocional
-  promoMessage?: string; // mensaje promocional
+  allowedSimulacros: string[];
+  profile: UserProfile;
+  attempts: Attempt[];
+  expiresAt?: string;
+  promoMessage?: string;
 }
 
 export interface AuthState {

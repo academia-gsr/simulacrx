@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Question, StudentInfo } from '../types';
+import { Question, User } from '../types';
 import { Simulacro, Block } from '../data/simulacros';
 
 interface ExamProps {
-  studentInfo: StudentInfo;
+  user: User;
   questions: Question[];
   onFinish: (answers: (number | null)[], timeUsed: number) => void;
   simulacro: Simulacro | null | undefined;
   block: Block | null;
 }
 
-const Exam: React.FC<ExamProps> = ({ studentInfo, questions, onFinish, simulacro, block }) => {
+const Exam: React.FC<ExamProps> = ({ user, questions, onFinish, simulacro, block }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<(number | null)[]>(new Array(questions.length).fill(null));
   const EXAM_DURATION = (block?.duration || 180) * 60; // duración real del bloque en segundos
@@ -74,7 +74,7 @@ const Exam: React.FC<ExamProps> = ({ studentInfo, questions, onFinish, simulacro
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="hidden md:block">
-              <p className="text-sm font-semibold">{studentInfo.name}</p>
+              <p className="text-sm font-semibold">{user.profile.fullName}</p>
               <p className="text-xs text-white/70">{simulacro?.institution || 'SimulacrUx'}</p>
             </div>
           </div>

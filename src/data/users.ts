@@ -8,7 +8,13 @@ export const pilotUsers: User[] = [
     password: 'Admin1234',
     role: 'admin',
     displayName: 'Administrador del Sistema',
-    allowedSimulacros: ['sim01', 'sim02'], // acceso total
+    allowedSimulacros: ['sim01', 'sim02'],
+    profile: {
+      fullName: 'Administrador SimulacrUx',
+      phone: '999999999',
+      email: 'admin@simulacrx.com'
+    },
+    attempts: [],
   },
   {
     id: 'plus-uni-001',
@@ -17,7 +23,12 @@ export const pilotUsers: User[] = [
     role: 'plus',
     displayName: 'Usuario PLUS - UNI',
     allowedSimulacros: ['sim01'],
-    attempts: {},
+    profile: {
+      fullName: 'Postulante UNI PLUS',
+      phone: '987654321',
+      email: 'plus.uni@simulacrx.com'
+    },
+    attempts: [],
   },
   {
     id: 'plus-mgp-001',
@@ -26,7 +37,12 @@ export const pilotUsers: User[] = [
     role: 'plus',
     displayName: 'Usuario PLUS - Marina',
     allowedSimulacros: ['sim02'],
-    attempts: {},
+    profile: {
+      fullName: 'Postulante Marina PLUS',
+      phone: '987654322',
+      email: 'plus.mgp@simulacrx.com'
+    },
+    attempts: [],
   },
   {
     id: 'basic-uni-001',
@@ -35,7 +51,12 @@ export const pilotUsers: User[] = [
     role: 'basic',
     displayName: 'Usuario BASIC - UNI',
     allowedSimulacros: ['sim01'],
-    attempts: {},
+    profile: {
+      fullName: 'Postulante UNI BASIC',
+      phone: '987654323',
+      email: 'basic.uni@simulacrx.com'
+    },
+    attempts: [],
   },
   {
     id: 'basic-mgp-001',
@@ -44,7 +65,12 @@ export const pilotUsers: User[] = [
     role: 'basic',
     displayName: 'Usuario BASIC - Marina',
     allowedSimulacros: ['sim02'],
-    attempts: {},
+    profile: {
+      fullName: 'Postulante Marina BASIC',
+      phone: '987654324',
+      email: 'basic.mgp@simulacrx.com'
+    },
+    attempts: [],
   },
 ];
 
@@ -52,7 +78,7 @@ export const authenticateUser = (username: string, password: string): User | nul
   const user = pilotUsers.find(
     u => u.username.toLowerCase() === username.toLowerCase() && u.password === password
   );
-  return user || null;
+  return user ? { ...user } : null; // Retornar copia para no mutar el original
 };
 
 export const getRoleInfo = (role: string) => {
@@ -102,5 +128,28 @@ export const getRoleInfo = (role: string) => {
         icon: '?',
         description: '',
       };
+  }
+};
+
+// Persistencia de intentos en localStorage
+const STORAGE_KEY = 'simulacrx_user_data';
+
+export const saveUserData = (userId: string, profile: User['profile'], attempts: User['attempts']) => {
+  try {
+    const allData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    allData[userId] = { profile, attempts };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(allData));
+  } catch (e) {
+    console.error('Error saving user data:', e);
+  }
+};
+
+export const loadUserData = (userId: string): { profile?: User['profile']; attempts?: User['attempts'] } => {
+  try {
+    const allData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    return allData[userId] || {};
+  } catch (e) {
+    console.error('Error loading user data:', e);
+    return {};
   }
 };

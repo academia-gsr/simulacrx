@@ -1,27 +1,32 @@
 import React, { useState } from 'react';
-import { StudentInfo, Question, UserRole } from '../types';
-import { Simulacro } from '../data/simulacros';
+import { User, UserRole } from '../types';
+import { Simulacro, Block } from '../data/simulacros';
+import { Question } from '../types';
 import { getRoleInfo } from '../data/users';
 
 interface ResultsProps {
-  studentInfo: StudentInfo;
+  user: User;
   answers: (number | null)[];
   timeUsed: number;
   questions: Question[];
-  onRestart: () => void;
+  onRetry: () => void;
+  onBackToDashboard: () => void;
   userRole: UserRole;
   simulacro: Simulacro | null | undefined;
+  blockId: string;
 }
 
-const Results: React.FC<ResultsProps> = ({ studentInfo, answers, timeUsed, questions, onRestart, userRole, simulacro }) => {
+const Results: React.FC<ResultsProps> = ({ user, answers, timeUsed, questions, onRetry, onBackToDashboard, userRole, simulacro, blockId }) => {
   const [showReview, setShowReview] = useState(false);
   const [filterArea, setFilterArea] = useState<string>('Todas');
+  const [showHistory, setShowHistory] = useState(false);
 
   const isPlus = userRole === 'plus';
   const isAdmin = userRole === 'admin';
   const isBasic = userRole === 'basic';
   const isGuest = userRole === 'guest';
   const canSeeExplanations = isPlus || isAdmin;
+  const canRetry = userRole === 'plus' || userRole === 'admin';
   const roleInfo = getRoleInfo(userRole);
 
   const theme = simulacro?.theme;
@@ -52,10 +57,25 @@ const Results: React.FC<ResultsProps> = ({ studentInfo, answers, timeUsed, quest
     };
   });
 
+  // Intentos del usuario para este bloque específico
+  const blockAttempts = user.attempts.filter(a => a.blockId === blockId);
+  const currentAttemptNumber = blockAttempts.length;
+
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins} min ${secs} seg`;
+  };
+
+  const formatDate = (isoString: string) => {
+    const date = new Date(isoString);
+    return date.toLocaleString('es-PE', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   };
 
   const getGrade = () => {
@@ -71,15 +91,20 @@ const Results: React.FC<ResultsProps> = ({ studentInfo, answers, timeUsed, quest
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
-      {/* Header con colorimetría del simulacro */}
+      {/* Header */}
       <div className={`bg-gradient-to-r ${headerGradient} text-white py-8 px-4`}>
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
               <h1 className="text-2xl md:text-3xl font-bold">Resultados</h1>
-              <p className="text-blue-200 mt-1">{studentInfo.name} — {simulacro?.institution || 'SimulacrUx'}</p>
-              <div className={`mt-2 inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs border ${roleInfo.bg} ${roleInfo.color} ${roleInfo.border}`}>
-                {roleInfo.icon} {roleInfo.label}
+              <p className="text-blue-200 mt-1">{user.profile.fullName} — {simulacro?.institution || 'SimulacrUx'}</p>
+              <div className="flex items-center gap-2 mt-2 flex-wrap">
+                <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs border ${roleInfo.bg} ${roleInfo.color} ${roleInfo.border}`}>
+                  {roleInfo.icon} {roleInfo.label}
+                </div>
+                <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs bg-white/20 text-white border border-white/30">
+                  📝 Intento #{currentAttemptNumber}
+                </div>
               </div>
             </div>
             <div className="text-right">
@@ -138,6 +163,62 @@ const Results: React.FC<ResultsProps> = ({ studentInfo, answers, timeUsed, quest
           </div>
         </div>
 
+        {/* Historial de intentos */}
+        {blockAttempts.length > 0 && !isGuest && (
+          <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+            <button
+              onClick={() => setShowHistory(!showHistory)}
+              className="w-full flex items-center justify-between"
+            >
+              <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                📊 Historial de Intentos ({blockAttempts.length})
+              </h2>
+              <svg className={`w-5 h-5 text-gray-500 transition-transform ${showHistory ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            
+            {showHistory && (
+              <div className="mt-4 space-y-2">
+                {[...blockAttempts].reverse().map((attempt, idx) => {
+                  const attemptNumber = blockAttempts.length - idx;
+                  const isCurrentAttempt = attempt.id === blockAttempts[blockAttempts.length - 1]?.id;
+                  return (
+                    <div
+                      key={attempt.id}
+                      className={`flex items-center justify-between p-3 rounded-lg border ${
+                        isCurrentAttempt ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 border-gray-200'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm ${
+                          attempt.score >= 70 ? 'bg-green-100 text-green-700' :
+                          attempt.score >= 50 ? 'bg-yellow-100 text-yellow-700' :
+                          'bg-red-100 text-red-700'
+                        }`}>
+                          #{attemptNumber}
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-800">
+                            {attempt.score}% — {attempt.correct}/{attempt.total} correctas
+                          </p>
+                          <p className="text-xs text-gray-500">{formatDate(attempt.date)}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-gray-500">{formatTime(attempt.timeUsed)}</p>
+                        {isCurrentAttempt && (
+                          <span className="text-xs bg-blue-500 text-white px-2 py-0.5 rounded-full">Actual</span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Upgrade banners for non-PLUS users */}
         {(isGuest || isBasic) && (
           <div className="mb-6 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-400/30 rounded-2xl p-5">
@@ -194,7 +275,20 @@ const Results: React.FC<ResultsProps> = ({ studentInfo, answers, timeUsed, quest
         </div>
 
         {/* Actions */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row gap-3 mb-6">
+          {/* Botón Intentar de nuevo - solo para PLUS y Admin */}
+          {canRetry && (
+            <button
+              onClick={onRetry}
+              className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-3 rounded-xl hover:opacity-90 transition flex items-center justify-center gap-2 shadow-md"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              🔄 Intentar de nuevo
+            </button>
+          )}
+
           {/* Review button - only for PLUS and Admin */}
           {canSeeExplanations ? (
             <button
@@ -214,8 +308,9 @@ const Results: React.FC<ResultsProps> = ({ studentInfo, answers, timeUsed, quest
               🔒 Explicaciones no disponibles ({isGuest ? 'Invitado' : 'BASIC'})
             </div>
           )}
+
           <button
-            onClick={onRestart}
+            onClick={onBackToDashboard}
             className="flex-1 bg-gray-100 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-200 transition flex items-center justify-center gap-2"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -325,14 +420,12 @@ const Results: React.FC<ResultsProps> = ({ studentInfo, answers, timeUsed, quest
         )}
 
         <div className="text-center mt-8 pb-8 text-gray-400 text-sm">
-          <p>SimulacrUx — {APP_CONFIG_FULL}</p>
-          <p className="mt-1">{simulacro?.project || '4. Simulación Exámenes PRE'} | Piloto v2.1</p>
+          <p>SimulacrUx — Plataforma de Simulacros de Admisión</p>
+          <p className="mt-1">{simulacro?.project || '4. Simulación Exámenes PRE'} | Piloto v2.2</p>
         </div>
       </div>
     </div>
   );
 };
-
-const APP_CONFIG_FULL = 'Plataforma de Simulacros de Admisión';
 
 export default Results;
