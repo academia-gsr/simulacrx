@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Question, StudentInfo } from '../types';
-import { questions } from '../data/questions';
+import { StudentInfo } from '../types';
+import { questions, EXAM_CONFIG } from '../data/questions';
 
 interface ResultsProps {
   studentInfo: StudentInfo;
@@ -61,12 +61,12 @@ const Results: React.FC<ResultsProps> = ({ studentInfo, answers, timeUsed, onRes
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-800 to-indigo-900 text-white py-8 px-4">
+      <div className="bg-gradient-to-r from-slate-800 via-blue-900 to-slate-800 text-white py-8 px-4">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
               <h1 className="text-2xl md:text-3xl font-bold">Resultados del Simulacro</h1>
-              <p className="text-blue-200 mt-1">{studentInfo.name} — UNI Ingeniería Civil</p>
+              <p className="text-blue-200 mt-1">{studentInfo.name} — {EXAM_CONFIG.subtitle}</p>
             </div>
             <div className="text-right">
               <p className="text-sm text-blue-200">Tiempo utilizado</p>
@@ -190,7 +190,7 @@ const Results: React.FC<ResultsProps> = ({ studentInfo, answers, timeUsed, onRes
             </div>
 
             <div className="space-y-6">
-              {filteredQuestions.map((question, idx) => {
+              {filteredQuestions.map((question) => {
                 const globalIdx = questions.indexOf(question);
                 const userAnswer = answers[globalIdx];
                 const isCorrect = userAnswer === question.correctAnswer;
@@ -209,7 +209,7 @@ const Results: React.FC<ResultsProps> = ({ studentInfo, answers, timeUsed, onRes
                         {globalIdx + 1}
                       </span>
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
                           <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">{question.area}</span>
                           {isCorrect && <span className="text-xs text-green-600 font-medium">✓ Correcta</span>}
                           {isBlank && <span className="text-xs text-gray-500 font-medium">— Sin responder</span>}
@@ -251,8 +251,8 @@ const Results: React.FC<ResultsProps> = ({ studentInfo, answers, timeUsed, onRes
 
         {/* Footer */}
         <div className="text-center mt-8 pb-8 text-gray-400 text-sm">
-          <p>Simulacro UNI — Proyecto 4. Simulación Exámenes PRE</p>
-          <p className="mt-1">Piloto v1.0 — Centro Preuniversitario UNI</p>
+          <p>{EXAM_CONFIG.subtitle}</p>
+          <p className="mt-1">Proyecto: {EXAM_CONFIG.project} | Piloto v2.0</p>
         </div>
       </div>
     </div>

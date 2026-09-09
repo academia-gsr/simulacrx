@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Question, StudentInfo } from '../types';
-import { questions } from '../data/questions';
+import { questions, EXAM_CONFIG } from '../data/questions';
 
 interface ExamProps {
   studentInfo: StudentInfo;
   onFinish: (answers: (number | null)[], timeUsed: number) => void;
 }
 
-const EXAM_DURATION = 90 * 60; // 90 minutes in seconds
+const EXAM_DURATION = EXAM_CONFIG.duration * 60; // duration in seconds
 
 const Exam: React.FC<ExamProps> = ({ studentInfo, onFinish }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -66,11 +66,11 @@ const Exam: React.FC<ExamProps> = ({ studentInfo, onFinish }) => {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Top Bar */}
       <div className="bg-white shadow-sm border-b sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="hidden md:block">
               <p className="text-sm font-semibold text-gray-800">{studentInfo.name}</p>
-              <p className="text-xs text-gray-500">Simulacro UNI - Ing. Civil</p>
+              <p className="text-xs text-gray-500">{EXAM_CONFIG.title} — ESMGP</p>
             </div>
           </div>
           
@@ -110,15 +110,15 @@ const Exam: React.FC<ExamProps> = ({ studentInfo, onFinish }) => {
 
       <div className="flex-1 flex">
         {/* Sidebar - Question Navigator (Desktop) */}
-        <div className="hidden md:block w-64 bg-white border-r overflow-y-auto">
+        <div className="hidden md:block w-72 bg-white border-r overflow-y-auto">
           <div className="p-4">
-            <h3 className="font-semibold text-gray-700 mb-3 text-sm">Navegación</h3>
+            <h3 className="font-semibold text-gray-700 mb-3 text-sm">Navegación de Preguntas</h3>
             <div className="grid grid-cols-5 gap-2">
               {questions.map((_, idx) => (
                 <button
                   key={idx}
                   onClick={() => setCurrentQuestion(idx)}
-                  className={`w-9 h-9 rounded-lg text-xs font-medium transition-all ${
+                  className={`w-10 h-10 rounded-lg text-xs font-medium transition-all ${
                     idx === currentQuestion
                       ? 'bg-blue-600 text-white shadow-md scale-110'
                       : answers[idx] !== null
@@ -140,13 +140,33 @@ const Exam: React.FC<ExamProps> = ({ studentInfo, onFinish }) => {
                 Sin responder ({questions.length - answeredCount})
               </div>
             </div>
+
+            {/* Area legend */}
+            <div className="mt-6 pt-4 border-t border-gray-100">
+              <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2">Secciones</h4>
+              <div className="space-y-1 text-xs text-gray-600">
+                <p>001-025: R. Matemático</p>
+                <p>026-050: R. Verbal</p>
+                <p>051-054: Geometría</p>
+                <p>055-058: Aritmética</p>
+                <p>059-062: Álgebra</p>
+                <p>063-066: Trigonometría</p>
+                <p>067-071: Física</p>
+                <p>072-076: Química</p>
+                <p>077-080: Lengua y Lit.</p>
+                <p>081-085: Informática</p>
+                <p>086-090: Historia</p>
+                <p>091-095: Geografía</p>
+                <p>096-100: Inglés</p>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Mobile Question Nav Overlay */}
         {showQuestionNav && (
           <div className="fixed inset-0 z-50 bg-black/50 md:hidden" onClick={() => setShowQuestionNav(false)}>
-            <div className="absolute right-0 top-0 bottom-0 w-72 bg-white p-4 overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="absolute right-0 top-0 bottom-0 w-80 bg-white p-4 overflow-y-auto" onClick={e => e.stopPropagation()}>
               <h3 className="font-semibold text-gray-700 mb-3">Navegación</h3>
               <div className="grid grid-cols-5 gap-2">
                 {questions.map((_, idx) => (
@@ -173,7 +193,7 @@ const Exam: React.FC<ExamProps> = ({ studentInfo, onFinish }) => {
         <div className="flex-1 p-4 md:p-8 max-w-3xl mx-auto w-full">
           {/* Question Header */}
           <div className="mb-6">
-            <div className="flex items-center gap-3 mb-3">
+            <div className="flex items-center gap-3 mb-3 flex-wrap">
               <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
                 Pregunta {currentQuestion + 1} de {questions.length}
               </span>
@@ -206,7 +226,7 @@ const Exam: React.FC<ExamProps> = ({ studentInfo, onFinish }) => {
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <span className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                  <span className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 ${
                     answers[currentQuestion] === idx
                       ? 'bg-blue-600 text-white'
                       : 'bg-gray-100 text-gray-600'
@@ -272,10 +292,10 @@ const Exam: React.FC<ExamProps> = ({ studentInfo, onFinish }) => {
               </div>
               <h3 className="text-xl font-bold text-gray-800">¿Terminar examen?</h3>
               <p className="text-gray-500 mt-2">
-                Has respondido <strong>{answeredCount}</strong> de {questions.length} preguntas.
+                Ha respondido <strong>{answeredCount}</strong> de {questions.length} preguntas.
                 {answeredCount < questions.length && (
                   <span className="text-red-500 block mt-1">
-                    ⚠️ Tienes {questions.length - answeredCount} preguntas sin responder.
+                    ⚠️ Tiene {questions.length - answeredCount} preguntas sin responder.
                   </span>
                 )}
               </p>
@@ -285,13 +305,13 @@ const Exam: React.FC<ExamProps> = ({ studentInfo, onFinish }) => {
                 onClick={() => setShowConfirm(false)}
                 className="flex-1 px-4 py-3 rounded-lg border border-gray-200 text-gray-700 font-medium hover:bg-gray-50 transition"
               >
-                Seguir respondiendo
+                Seguir
               </button>
               <button
                 onClick={handleFinish}
                 className="flex-1 px-4 py-3 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition"
               >
-                Terminar ahora
+                Terminar
               </button>
             </div>
           </div>
