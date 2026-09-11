@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Simulacro, Block, APP_CONFIG } from '../data/simulacros';
 import { Question, User } from '../types';
 import { getRoleInfo } from '../data/users';
+import AdminBugReports from './AdminBugReports';
+import { getReports } from './ReportBug';
 
 interface DashboardProps {
   simulacros: Simulacro[];
@@ -13,9 +15,11 @@ interface DashboardProps {
 
 const Dashboard: React.FC<DashboardProps> = ({ simulacros, user, onSelectBlock, onLogout, onOpenProfile }) => {
   const [selectedSimulacro, setSelectedSimulacro] = useState<string | null>(null);
+  const [showBugReports, setShowBugReports] = useState(false);
   const roleInfo = user ? getRoleInfo(user.role) : getRoleInfo('guest');
   const isGuest = !user || user.role === 'guest';
   const isAdmin = user?.role === 'admin';
+  const pendingReports = isAdmin ? getReports().filter(r => r.status === 'pending').length : 0;
 
   const canAccessSimulacro = (sim: Simulacro): boolean => {
     if (isAdmin) return true;
@@ -27,23 +31,35 @@ const Dashboard: React.FC<DashboardProps> = ({ simulacros, user, onSelectBlock, 
   const canAccessBlock = (sim: Simulacro, block: Block): boolean => {
     if (!canAccessSimulacro(sim)) return false;
     if (isAdmin) return true;
-    if (isGuest) return true; // invitados pueden acceder al 10%
+    if (isGuest) return true; // invitados pueden acceder (con limitaciones)
     if (user?.role === 'plus') return true;
     if (user?.role === 'basic') {
-      // BASIC tiene 1 intento
+      // BASIC tiene hasta 5 intentos
       const blockAttempts = user.attempts.filter(a => a.blockId === block.id).length;
-      return blockAttempts < 1;
+      return blockAttempts < 5;
     }
     return false;
   };
 
   const getAttemptsInfo = (block: Block): string | null => {
-    if (!user || user.role === 'admin' || user.role === 'plus' || isGuest) return null;
-    if (user.role === 'basic') {
-      const blockAttempts = user.attempts.filter(a => a.blockId === block.id).length;
-      if (blockAttempts >= 1) return 'Ya utilizado';
-      return '1 intento disponible';
+    if (!user || user.role === 'admin' || user.role === 'plus') return null;
+    
+    const blockAttempts = user.attempts.filter(a => a.blockId === block.id).length;
+    
+    if (isGuest) {
+      // Invitados: hasta 3 intentos
+      const remaining = 3 - blockAttempts;
+      if (remaining <= 0) return 'Sin intentos disponibles';
+      return `${blockAttempts}/3 intentos usados`;
     }
+    
+    if (user.role === 'basic') {
+      // BASIC: hasta 5 intentos
+      const remaining = 5 - blockAttempts;
+      if (remaining <= 0) return 'Sin intentos disponibles';
+      return `${blockAttempts}/5 intentos usados`;
+    }
+    
     return null;
   };
 
@@ -142,6 +158,35 @@ const Dashboard: React.FC<DashboardProps> = ({ simulacros, user, onSelectBlock, 
                 <p className="text-yellow-200/60 text-xs mt-3">
                   💳 Próximamente: pagos vía PLIN o YAPE
                 </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Prueba Rápida para PLUS */}
+        {user?.role === 'plus' && (
+          <div className="mb-6 bg-gradient-to-r from-purple-500/10 to-indigo-500/10 border border-purple-400/30 rounded-2xl p-6">
+            <div className="flex items-start justify-between flex-wrap gap-4">
+              <div className="flex-1">
+                <h3 className="text-purple-300 font-bold text-lg mb-2 flex items-center gap-2">
+                  ⚡ Pruebas Rápidas Personalizadas
+                </h3>
+                <p className="text-purple-100/80 text-sm mb-3">
+                  Como usuario PLUS, puedes crear pruebas rápidas de 5, 10 o 15 preguntas filtradas por asignatura, tema o subtema específico.
+                </p>
+                <button
+                  onClick={() => {
+                    // TODO: Implementar modal de selección de área/tema/cantidad
+                    alert('Funcionalidad de Pruebas Rápidas en desarrollo');
+                  }}
+                  className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold px-6 py-2.5 rounded-lg hover:opacity-90 transition"
+                >
+                  🎯 Crear Prueba Rápida
+                </button>
+              </div>
+              <div className="bg-white/10 rounded-xl p-4 border border-white/10">
+                <p className="text-3xl font-bold text-yellow-400">∞</p>
+                <p className="text-xs text-purple-200">Intentos ilimitados</p>
               </div>
             </div>
           </div>
@@ -309,7 +354,25 @@ const Dashboard: React.FC<DashboardProps> = ({ simulacros, user, onSelectBlock, 
                 <strong>Próximas iteraciones:</strong> Login con Google + Pagos PLIN/YAPE para automatizar upgrades de Invitado → BASIC/PLUS.
               </p>
             </div>
+            
+            {/* Botón para ver reportes de fallas */}
+            <button
+              onClick={() => setShowBugReports(true)}
+              className="mt-4 w-full bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold py-3 rounded-xl hover:opacity-90 transition flex items-center justify-center gap-2"
+            >
+              🐛 Ver Reportes de Fallas
+              {pendingReports > 0 && (
+                <span className="bg-white text-orange-600 px-2 py-0.5 rounded-full text-xs font-bold">
+                  {pendingReports} pendientes
+                </span>
+              )}
+            </button>
           </div>
+        )}
+
+        {/* Modal de Reportes de Fallas */}
+        {showBugReports && isAdmin && (
+          <AdminBugReports onClose={() => setShowBugReports(false)} />
         )}
 
         {/* Footer */}

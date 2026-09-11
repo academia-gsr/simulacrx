@@ -5,7 +5,7 @@
 
 [![Versión](https://img.shields.io/badge/versión-2.1.0-blue)]()
 [![Estado](https://img.shields.io/badge/estado-piloto-green)]()
-[![Licencia](https://img.shields.io/badge/licencia-MIT-yellow)]()
+[![Licencia](https://img.shields.io/badge/licencia-NoLicense-red)]()
 
 **SimulacrUx** es una plataforma web moderna diseñada para simulacros de admisión preuniversitaria. Permite a los postulantes practicar con exámenes reales de instituciones como la **Universidad Nacional de Ingeniería (UNI)** y la **Escuela de Oficiales de la Marina de Guerra del Perú (ESMGP)**.
 
@@ -133,19 +133,27 @@ npm run preview
 
 ```
 simulacrx/
+├── bancos/                    # 📚 Bancos de preguntas y solucionarios
+│   ├── README.md              # Documentación general de bancos
+│   ├── simulacro-01-uni/      # Simulacro UNI P_UNI 2027
+│   │   ├── README.md          # Documentación del banco UNI
+│   │   ├── dia1-aptitud-humanidades.ts  # 100 preguntas (3 horas)
+│   │   ├── dia2-matematica.ts           # 40 preguntas (3 horas)
+│   │   └── dia3-fisica-quimica.ts       # 40 preguntas (3 horas)
+│   └── simulacro-02-esmgp/    # Simulacro ESMGP Marina
+│       ├── README.md          # Documentación del banco Marina
+│       └── banco1-completo.ts           # 100 preguntas (2 horas)
 ├── public/                    # Archivos estáticos públicos
 ├── src/
 │   ├── components/            # Componentes React
+│   │   ├── AdminBugReports.tsx  # Panel admin de reportes
 │   │   ├── Dashboard.tsx      # Panel principal post-login
 │   │   ├── Exam.tsx           # Interfaz de examen
-│   │   ├── Landing.tsx        # Pantalla previa al examen
 │   │   ├── Login.tsx          # Control de acceso
+│   │   ├── Profile.tsx        # Panel de perfil de usuario
+│   │   ├── ReportBug.tsx      # Botón de reportar fallas
 │   │   └── Results.tsx        # Resultados y revisión
-│   ├── data/                  # Bancos de preguntas y configuración
-│   │   ├── simulacro01-day1.ts   # 100 preguntas Aptitud y Humanidades
-│   │   ├── simulacro01-day2.ts   # 40 preguntas Matemática
-│   │   ├── simulacro01-day3.ts   # 40 preguntas Física y Química
-│   │   ├── simulacro02-questions.ts  # 100 preguntas ESMGP
+│   ├── data/                  # Configuración y datos
 │   │   ├── simulacros.ts      # Configuración de simulacros
 │   │   └── users.ts           # Usuarios piloto y autenticación
 │   ├── types.ts               # Tipos TypeScript
@@ -159,7 +167,7 @@ simulacrx/
 ├── README.md                  # Este archivo
 ├── DEPLOYMENT.md              # Guía de despliegue
 ├── CONTRIBUTING.md            # Guía de contribución
-└── LICENSE                    # Licencia MIT
+└── QUICK_START.md             # Guía rápida de inicio
 ```
 
 ---
@@ -199,13 +207,14 @@ simulacrx/
 
 **Institución:** Universidad Nacional de Ingeniería  
 **Colorimetría:** Azul/Índigo  
-**Total:** 180 preguntas distribuidas en 3 bloques
+**Total:** 180 preguntas distribuidas en 3 bloques  
+**Ubicación:** `bancos/simulacro-01-uni/`
 
-| Bloque | Día | Preguntas | Duración |
-|--------|-----|-----------|----------|
-| Aptitud Académica y Humanidades | Día 1 | 100 | 3 horas |
-| Matemática | Día 2 | 40 | 3 horas |
-| Física y Química | Día 3 | 40 | 3 horas |
+| Bloque | Archivo | Día | Preguntas | Duración |
+|--------|---------|-----|-----------|----------|
+| Aptitud Académica y Humanidades | `dia1-aptitud-humanidades.ts` | Día 1 | 100 | 3 horas |
+| Matemática | `dia2-matematica.ts` | Día 2 | 40 | 3 horas |
+| Física y Química | `dia3-fisica-quimica.ts` | Día 3 | 40 | 3 horas |
 
 **Áreas evaluadas:** Razonamiento Matemático, Razonamiento Verbal, Lógico-Algorítmico, Comunicación, Literatura, Historia del Perú, Geografía, Economía, Inglés, Filosofía, Lógica, Actualidad, Ciencia y Tecnología, Realidad Nacional, Aritmética, Álgebra, Geometría, Trigonometría, Cálculo Diferencial, Mecánica, Termodinámica, Electromagnetismo, Óptica, Estructura Atómica, Tabla Periódica, Enlaces, Reacciones, Estequiometría.
 
@@ -213,11 +222,12 @@ simulacrx/
 
 **Institución:** Escuela de Oficiales de la Marina de Guerra del Perú  
 **Colorimetría:** Slate/Azul oscuro  
-**Total:** 100 preguntas en 1 bloque
+**Total:** 100 preguntas en 1 bloque  
+**Ubicación:** `bancos/simulacro-02-esmgp/`
 
-| Bloque | Preguntas | Duración |
-|--------|-----------|----------|
-| Banco 1 Completo | 100 | 2 horas |
+| Bloque | Archivo | Preguntas | Duración |
+|--------|---------|-----------|----------|
+| Banco 1 Completo | `banco1-completo.ts` | 100 | 2 horas |
 
 **Áreas evaluadas:** R. Matemático, R. Verbal, Geometría, Aritmética, Álgebra, Trigonometría, Física, Química, Lengua y Literatura, Informática, Historia, Geografía, Inglés.
 
@@ -323,6 +333,34 @@ Ver [DEPLOYMENT.md](./DEPLOYMENT.md) para instrucciones completas.
 
 ---
 
+## 🐛 Sistema de Reporte de Fallas
+
+Durante los exámenes, los usuarios pueden reportar problemas de forma **no invasiva** mediante un botón flotante "Reportar falla" que aparece en la esquina inferior derecha.
+
+### Tipos de reportes disponibles:
+
+- 📝 **Pregunta incompleta** — Falta información en el enunciado
+- 📊 **Falta gráfico** — La pregunta requiere una imagen o gráfico
+- 📄 **Falta texto** — Falta un texto o contexto necesario
+- ❌ **Respuesta incorrecta** — La respuesta marcada es errónea
+- 💬 **Otro / Comentario** — Sugerencia u otra observación
+
+### Características:
+
+✅ **No invasivo** — No interrumpe el flujo del examen  
+✅ **Persistencia local** — Los reportes se guardan en localStorage  
+✅ **Panel administrativo** — El administrador puede ver y gestionar todos los reportes  
+✅ **Estados de seguimiento** — Pendiente → Revisado → Resuelto  
+✅ **Filtros** — Filtrar por estado (todos, pendientes, revisados, resueltos)
+
+### Acceso al panel de reportes (solo administrador):
+
+1. Iniciar sesión como `Admin` / `Admin1234`
+2. Ir al panel de administración en el Dashboard
+3. Clic en "🐛 Ver Reportes de Fallas"
+
+---
+
 ## 🔮 Próximas iteraciones
 
 ### Iteración 2 (planificada)
@@ -358,7 +396,24 @@ Ver [DEPLOYMENT.md](./DEPLOYMENT.md) para instrucciones completas.
 
 ## 📄 Licencia
 
-Este proyecto está bajo la licencia MIT. Ver [LICENSE](./LICENSE) para más detalles.
+**NoLicense — Todos los derechos reservados**
+
+Este proyecto y sus componentes (código fuente, bancos de preguntas, solucionarios, documentación) son propiedad intelectual del proyecto **SimulacrUx**.
+
+⚠️ **Restricciones:**
+- ❌ No se permite redistribución sin autorización expresa
+- ❌ No se permite modificación o creación de obras derivadas
+- ❌ No se permite uso comercial
+- ❌ No se permite sublicenciamiento
+
+✅ **Permisos:**
+- ✅ Uso interno para fines educativos
+- ✅ Consulta y revisión del código
+- ✅ Reporte de bugs y sugerencias
+
+Para solicitar autorización de uso, contacta al equipo del proyecto.
+
+**Nota:** Los bancos de preguntas en la carpeta `bancos/` están protegidos bajo esta misma política.
 
 ---
 
@@ -382,3 +437,7 @@ Para reportar bugs o solicitar funcionalidades:
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-38B2AC?style=for-the-badge&logo=tailwind-css)]()
 
 </div>
+
+---
+
+**© 2026 SimulacrUx — Todos los derechos reservados**

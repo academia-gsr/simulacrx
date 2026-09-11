@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Question, User } from '../types';
 import { Simulacro, Block } from '../data/simulacros';
+import ReportBug from './ReportBug';
 
 interface ExamProps {
   user: User;
@@ -13,7 +14,12 @@ interface ExamProps {
 const Exam: React.FC<ExamProps> = ({ user, questions, onFinish, simulacro, block }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<(number | null)[]>(new Array(questions.length).fill(null));
-  const EXAM_DURATION = (block?.duration || 180) * 60; // duración real del bloque en segundos
+  
+  // Ajustar duración según rol del usuario
+  const isGuest = user.role === 'guest';
+  const baseDuration = block?.duration || 180;
+  const EXAM_DURATION = isGuest ? Math.ceil(baseDuration * 0.1) * 60 : baseDuration * 60;
+  
   const [timeRemaining, setTimeRemaining] = useState(EXAM_DURATION);
   const [showConfirm, setShowConfirm] = useState(false);
   const [showQuestionNav, setShowQuestionNav] = useState(false);
@@ -288,6 +294,15 @@ const Exam: React.FC<ExamProps> = ({ user, questions, onFinish, simulacro, block
           </div>
         </div>
       )}
+
+      {/* Botón de Reportar Falla - No invasivo */}
+      <ReportBug
+        simulacroId={simulacro?.id || ''}
+        blockId={block?.id || ''}
+        questionId={question.id}
+        questionNumber={currentQuestion + 1}
+        userId={user.id}
+      />
     </div>
   );
 };
