@@ -17,17 +17,21 @@ const Exam: React.FC<ExamProps> = ({ user, questions, onFinish, simulacro, block
   
   // Ajustar duración según rol del usuario
   const isGuest = user.role === 'guest';
+  const isPlus = user.role === 'plus' || user.role === 'admin';
   const baseDuration = block?.duration || 180;
   const EXAM_DURATION = isGuest ? Math.ceil(baseDuration * 0.1) * 60 : baseDuration * 60;
   
   const [timeRemaining, setTimeRemaining] = useState(EXAM_DURATION);
   const [showConfirm, setShowConfirm] = useState(false);
   const [showQuestionNav, setShowQuestionNav] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
 
   const theme = simulacro?.theme;
   const gradientClass = theme?.headerBg || 'from-slate-800 via-blue-900 to-slate-800';
 
   useEffect(() => {
+    if (isPaused) return; // No iniciar timer si está pausado
+    
     const timer = setInterval(() => {
       setTimeRemaining(prev => {
         if (prev <= 1) {
@@ -39,7 +43,7 @@ const Exam: React.FC<ExamProps> = ({ user, questions, onFinish, simulacro, block
       });
     }, 1000);
     return () => clearInterval(timer);
-  }, [answers, onFinish, EXAM_DURATION]);
+  }, [answers, onFinish, EXAM_DURATION, isPaused]);
 
   const handleAnswer = (optionIndex: number) => {
     const newAnswers = [...answers];
@@ -85,11 +89,50 @@ const Exam: React.FC<ExamProps> = ({ user, questions, onFinish, simulacro, block
             </div>
           </div>
           
-          <div className={`flex items-center gap-2 px-4 py-2 rounded-full font-mono font-bold text-lg ${isTimeLow ? 'bg-red-500/30 text-red-200 animate-pulse' : 'bg-white/20 text-white'}`}>
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            {formatTime(timeRemaining)}
+          <div className="flex items-center gap-3">
+            {/* Botón Pausar/Reanudar - Solo para PLUS */}
+            {isPlus && (
+              <button
+                onClick={() => setIsPaused(!isPaused)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+                  isPaused 
+                    ? 'bg-yellow-500 hover:bg-yellow-600 text-white' 
+                    : 'bg-white/20 hover:bg-white/30 text-white'
+                }`}
+                title={isPaused ? 'Reanudar examen' : 'Pausar examen'}
+              >
+                {isPaused ? (
+                  <>
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                    <span className="hidden md:inline">Reanudar</span>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                    </svg>
+                    <span className="hidden md:inline">Pausar</span>
+                  </>
+                )}
+              </button>
+            )}
+            
+            {/* Temporizador */}
+            <div className={`flex items-center gap-2 px-4 py-2 rounded-full font-mono font-bold text-lg ${
+              isPaused 
+                ? 'bg-yellow-500/30 text-yellow-200' 
+                : isTimeLow 
+                ? 'bg-red-500/30 text-red-200 animate-pulse' 
+                : 'bg-white/20 text-white'
+            }`}>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {formatTime(timeRemaining)}
+              {isPaused && <span className="text-xs ml-1">(PAUSADO)</span>}
+            </div>
           </div>
 
           <div className="flex items-center gap-3">
@@ -291,6 +334,37 @@ const Exam: React.FC<ExamProps> = ({ user, questions, onFinish, simulacro, block
                 Terminar
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Overlay de Pausa - Solo para PLUS */}
+      {isPaused && isPlus && (
+        <div className="fixed inset-0 z-40 bg-black/80 backdrop-blur-sm flex items-center justify-center">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md text-center">
+            <div className="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-10 h-10 text-yellow-600" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+              </svg>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">Examen Pausado</h2>
+            <p className="text-gray-600 mb-6">
+              El temporizador está detenido. Haz clic en "Reanudar" para continuar con el examen.
+            </p>
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+              <p className="text-sm text-yellow-800">
+                <strong>Tiempo restante:</strong> {formatTime(timeRemaining)}
+              </p>
+            </div>
+            <button
+              onClick={() => setIsPaused(false)}
+              className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-3 rounded-lg hover:opacity-90 transition flex items-center justify-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+              Reanudar Examen
+            </button>
           </div>
         </div>
       )}
