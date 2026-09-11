@@ -4,6 +4,7 @@ import Dashboard from './components/Dashboard';
 import Exam from './components/Exam';
 import Results from './components/Results';
 import Profile from './components/Profile';
+import QuickTest from './components/QuickTest';
 import { User, UserProfile, Question, Attempt } from './types';
 import { simulacros, getSimulacroById, Block } from './data/simulacros';
 import { authenticateUser, saveUserData, loadUserData } from './data/users';
@@ -19,7 +20,9 @@ interface AppData {
   currentBlockId: string;
   currentBlock: Block | null;
   showProfile: boolean;
+  showQuickTest: boolean;
   questionOrder: number[]; // índices originales de las preguntas
+  quickTestName: string;
 }
 
 function App() {
@@ -33,7 +36,9 @@ function App() {
     currentBlockId: '',
     currentBlock: null,
     showProfile: false,
+    showQuickTest: false,
     questionOrder: [],
+    quickTestName: '',
   });
 
   // Cargar datos guardados al iniciar sesión
@@ -94,7 +99,9 @@ function App() {
       currentBlockId: '',
       currentBlock: null,
       showProfile: false,
+      showQuickTest: false,
       questionOrder: [],
+      quickTestName: '',
     });
     setState('login');
   };
@@ -219,6 +226,32 @@ function App() {
     setState('dashboard');
   };
 
+  // Manejadores de Pruebas Rápidas
+  const handleOpenQuickTest = () => {
+    setData(prev => ({ ...prev, showQuickTest: true }));
+  };
+
+  const handleCloseQuickTest = () => {
+    setData(prev => ({ ...prev, showQuickTest: false }));
+  };
+
+  const handleStartQuickTest = (questions: Question[], simulacroId: string, testName: string) => {
+    const simulacro = getSimulacroById(simulacroId);
+    const indices = questions.map((_, i) => i);
+    
+    setData(prev => ({
+      ...prev,
+      showQuickTest: false,
+      currentSimulacroId: simulacroId,
+      currentBlockId: 'quick-test',
+      currentBlock: null,
+      currentQuestions: questions,
+      questionOrder: indices,
+      quickTestName: testName,
+    }));
+    setState('exam');
+  };
+
   const currentSimulacro = data.currentSimulacroId ? getSimulacroById(data.currentSimulacroId) : null;
   const userRole = data.user?.role || 'guest';
 
@@ -235,6 +268,7 @@ function App() {
           onSelectBlock={handleSelectBlock}
           onLogout={handleLogout}
           onOpenProfile={() => setData(prev => ({ ...prev, showProfile: true }))}
+          onOpenQuickTest={handleOpenQuickTest}
         />
       )}
 
@@ -259,6 +293,8 @@ function App() {
           userRole={userRole}
           simulacro={currentSimulacro}
           blockId={data.currentBlockId}
+          isQuickTest={data.currentBlockId === 'quick-test'}
+          quickTestName={data.quickTestName}
         />
       )}
 
@@ -268,6 +304,15 @@ function App() {
           user={data.user}
           onUpdateProfile={handleUpdateProfile}
           onClose={() => setData(prev => ({ ...prev, showProfile: false }))}
+        />
+      )}
+
+      {/* Modal de Pruebas Rápidas */}
+      {data.showQuickTest && data.user && (
+        <QuickTest
+          user={data.user}
+          onStartTest={handleStartQuickTest}
+          onClose={handleCloseQuickTest}
         />
       )}
     </div>
