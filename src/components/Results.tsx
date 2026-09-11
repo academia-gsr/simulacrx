@@ -26,7 +26,13 @@ const Results: React.FC<ResultsProps> = ({ user, answers, timeUsed, questions, o
   const isBasic = userRole === 'basic';
   const isGuest = userRole === 'guest';
   const canSeeExplanations = isPlus || isAdmin;
-  const canRetry = userRole === 'plus' || userRole === 'admin';
+  
+  // Permitir reintentar: PLUS/Admin (ilimitado), BASIC (hasta 5), Invitado (hasta 3)
+  const currentBlockAttempts = user.attempts.filter(a => a.blockId === blockId).length;
+  const maxAttempts = isGuest ? 3 : isBasic ? 5 : isPlus || isAdmin ? Infinity : 0;
+  const canRetry = currentBlockAttempts < maxAttempts;
+  const attemptsRemaining = maxAttempts === Infinity ? '∞' : Math.max(0, maxAttempts - currentBlockAttempts);
+  
   const roleInfo = getRoleInfo(userRole);
 
   const theme = simulacro?.theme;
@@ -219,6 +225,23 @@ const Results: React.FC<ResultsProps> = ({ user, answers, timeUsed, questions, o
           </div>
         )}
 
+        {/* Intentos restantes */}
+        {!isGuest && (
+          <div className="mb-4 bg-blue-50 border border-blue-200 rounded-xl p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-lg">📊</span>
+                <span className="text-sm font-medium text-blue-900">
+                  Intentos: {currentBlockAttempts}/{maxAttempts === Infinity ? '∞' : maxAttempts}
+                </span>
+              </div>
+              <span className="text-sm text-blue-700">
+                {attemptsRemaining === '∞' ? 'Intentos ilimitados' : `${attemptsRemaining} intento(s) restante(s)`}
+              </span>
+            </div>
+          </div>
+        )}
+
         {/* Upgrade banners for non-PLUS users */}
         {(isGuest || isBasic) && (
           <div className="mb-6 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-400/30 rounded-2xl p-5">
@@ -230,14 +253,14 @@ const Results: React.FC<ResultsProps> = ({ user, answers, timeUsed, questions, o
                 </h3>
                 <p className="text-yellow-700/80 text-sm mb-3">
                   {isGuest 
-                    ? 'Acabas de ver el 10% de las preguntas. Con un plan BASIC (S/35) accedes a 1 intento, o con PLUS (S/50) tienes intentos ilimitados con explicaciones detalladas.'
-                    : 'Como usuario BASIC tienes 1 intento y no ves explicaciones. Con PLUS (S/50) obtienes intentos ilimitados y explicaciones detalladas de cada respuesta.'}
+                    ? 'Acabas de ver el 10% de las preguntas con 10% del tiempo. Con un plan BASIC (S/35) accedes a 5 intentos, o con PLUS (S/50) tienes intentos ilimitados con explicaciones detalladas.'
+                    : `Como usuario BASIC tienes ${currentBlockAttempts}/5 intentos usados y no ves explicaciones. Con PLUS (S/50) obtienes intentos ilimitados y explicaciones detalladas de cada respuesta.`}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {!isBasic && (
                     <div className="bg-white/60 rounded-lg px-3 py-2 border border-green-400/30">
                       <p className="text-green-700 font-bold text-sm">🎯 BASIC - S/ 35</p>
-                      <p className="text-gray-600 text-xs">1 intento por bloque</p>
+                      <p className="text-gray-600 text-xs">5 intentos por bloque</p>
                     </div>
                   )}
                   <div className="bg-white/60 rounded-lg px-3 py-2 border border-yellow-400/30">
@@ -251,33 +274,119 @@ const Results: React.FC<ResultsProps> = ({ user, answers, timeUsed, questions, o
           </div>
         )}
 
-        {/* Score by Area */}
+        {/* Score by Area - Acordeones para PLUS, Lista para otros */}
         <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-6">
           <h2 className="text-xl font-bold text-gray-800 mb-4">Rendimiento por Área</h2>
-          <div className="space-y-4">
-            {scoreByArea.map(({ area, correct, total, percentage: pct }) => (
-              <div key={area}>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-medium text-gray-700">{area}</span>
-                  <span className="text-sm text-gray-500">{correct}/{total} ({pct}%)</span>
+          
+          {canSeeExplanations ? (
+            // Vista de Acordeones para PLUS/Admin
+            <div className="space-y-3">
+              {scoreByArea.map(({ area, correct, total, percentage: pct }) => {
+                const [isExpanded, setIsExpanded] = useState(false);
+                const areaQuestions = questions.filter(q => q.area === area);
+                
+                return (
+                  <div key={area} className="border border-gray-200 rounded-lg overflow-hidden">
+                    {/* Header del acordeón */}
+                    <button
+                      onClick={() => setIsExpanded(!isExpanded)}
+                      className="w-full px-4 py-3 bg-gray-50 hover:bg-gray-100 transition flex items-center justify-between"
+                    >
+                      <div className="flex items-center gap-3 flex-1">
+                        <span className="text-sm font-medium text-gray-800">{area}</span>
+                        <span className={`text-xs px-2 py-0.5 rounded-full ${
+                          pct >= 70 ? 'bg-green-100 text-green-700' :
+                          pct >= 50 ? 'bg-yellow-100 text-yellow-700' :
+                          'bg-red-100 text-red-700'
+                        }`}>
+                          {correct}/{total} ({pct}%)
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full rounded-full transition-all duration-1000 ${
+                              pct >= 70 ? 'bg-green-500' : pct >= 50 ? 'bg-yellow-500' : 'bg-red-500'
+                            }`}
+                            style={{ width: `${pct}%` }}
+                          />
+                        </div>
+                        <svg
+                          className={`w-5 h-5 text-gray-500 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </button>
+                    
+                    {/* Contenido expandible */}
+                    {isExpanded && (
+                      <div className="px-4 py-3 bg-white border-t border-gray-200">
+                        <div className="space-y-2">
+                          {areaQuestions.map((q, idx) => {
+                            const globalIdx = questions.indexOf(q);
+                            const userAnswer = answers[globalIdx];
+                            const isCorrect = userAnswer === q.correctAnswer;
+                            const isBlank = userAnswer === null;
+                            
+                            return (
+                              <div
+                                key={q.id}
+                                className={`flex items-start gap-2 p-2 rounded text-sm ${
+                                  isCorrect ? 'bg-green-50' :
+                                  isBlank ? 'bg-gray-50' :
+                                  'bg-red-50'
+                                }`}
+                              >
+                                <span className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold text-white ${
+                                  isCorrect ? 'bg-green-500' : isBlank ? 'bg-gray-400' : 'bg-red-500'
+                                }`}>
+                                  {globalIdx + 1}
+                                </span>
+                                <span className="flex-1 text-gray-700 line-clamp-2">{q.question}</span>
+                                <span className="flex-shrink-0 text-xs">
+                                  {isCorrect ? '✓' : isBlank ? '—' : '✗'}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            // Vista de Lista para BASIC/Invitado
+            <div className="space-y-4">
+              {scoreByArea.map(({ area, correct, total, percentage: pct }) => (
+                <div key={area}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm font-medium text-gray-700">{area}</span>
+                    <span className="text-sm text-gray-500">{correct}/{total} ({pct}%)</span>
+                  </div>
+                  <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-1000 ${
+                        pct >= 70 ? 'bg-green-500' : pct >= 50 ? 'bg-yellow-500' : 'bg-red-500'
+                      }`}
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
                 </div>
-                <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
-                  <div
-                    className={`h-full rounded-full transition-all duration-1000 ${
-                      pct >= 70 ? 'bg-green-500' : pct >= 50 ? 'bg-yellow-500' : 'bg-red-500'
-                    }`}
-                    style={{ width: `${pct}%` }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Actions */}
         <div className="flex flex-col sm:flex-row gap-3 mb-6">
-          {/* Botón Intentar de nuevo - solo para PLUS y Admin */}
-          {canRetry && (
+          {/* Botón Intentar de nuevo - disponible para todos los roles con intentos restantes */}
+          {canRetry ? (
             <button
               onClick={onRetry}
               className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-3 rounded-xl hover:opacity-90 transition flex items-center justify-center gap-2 shadow-md"
@@ -285,8 +394,15 @@ const Results: React.FC<ResultsProps> = ({ user, answers, timeUsed, questions, o
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
-              🔄 Intentar de nuevo
+              🔄 Intentar de nuevo {attemptsRemaining !== '∞' && `(${attemptsRemaining} restante${Number(attemptsRemaining) !== 1 ? 's' : ''})`}
             </button>
+          ) : (
+            <div className="flex-1 bg-gray-200 text-gray-500 font-bold py-3 rounded-xl flex items-center justify-center gap-2">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+              Sin intentos disponibles
+            </div>
           )}
 
           {/* Review button - only for PLUS and Admin */}

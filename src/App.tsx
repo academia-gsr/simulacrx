@@ -107,29 +107,32 @@ function App() {
     saveUserData(updatedUser.id, profile, updatedUser.attempts);
   };
 
-  const prepareQuestions = (questions: Question[], userRole: string): { orderedQuestions: Question[]; order: number[] } => {
+  const prepareQuestions = (questions: Question[], userRole: string, blockDuration: number): { orderedQuestions: Question[]; order: number[]; duration: number } => {
     // Crear array de índices y mezclar aleatoriamente
     const indices = questions.map((_, i) => i);
     const shuffledIndices = [...indices].sort(() => Math.random() - 0.5);
     
     let finalIndices = shuffledIndices;
+    let duration = blockDuration;
     
     if (userRole === 'guest') {
-      // Invitados: solo 10% de preguntas
+      // Invitados: solo 10% de preguntas y 10% del tiempo
       const count = Math.ceil(shuffledIndices.length * 0.1);
       finalIndices = shuffledIndices.slice(0, count);
+      duration = Math.ceil(blockDuration * 0.1); // 10% del tiempo
     }
     
     const orderedQuestions = finalIndices.map(i => questions[i]);
-    return { orderedQuestions, order: finalIndices };
+    return { orderedQuestions, order: finalIndices, duration };
   };
 
   const handleSelectBlock = (simulacroId: string, blockId: string, questions: Question[]) => {
     const userRole = data.user?.role || 'guest';
-    const { orderedQuestions, order } = prepareQuestions(questions, userRole);
-    
     const simulacro = getSimulacroById(simulacroId);
     const block = simulacro?.blocks.find(b => b.id === blockId) || null;
+    const blockDuration = block?.duration || 180;
+    
+    const { orderedQuestions, order } = prepareQuestions(questions, userRole, blockDuration);
     
     setData(prev => ({
       ...prev,
@@ -189,7 +192,8 @@ function App() {
     if (!block) return;
     
     const userRole = data.user?.role || 'guest';
-    const { orderedQuestions, order } = prepareQuestions(block.questions, userRole);
+    const blockDuration = block.duration;
+    const { orderedQuestions, order } = prepareQuestions(block.questions, userRole, blockDuration);
     
     setData(prev => ({
       ...prev,
