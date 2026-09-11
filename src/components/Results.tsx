@@ -14,9 +14,11 @@ interface ResultsProps {
   userRole: UserRole;
   simulacro: Simulacro | null | undefined;
   blockId: string;
+  isQuickTest?: boolean;
+  quickTestName?: string;
 }
 
-const Results: React.FC<ResultsProps> = ({ user, answers, timeUsed, questions, onRetry, onBackToDashboard, userRole, simulacro, blockId }) => {
+const Results: React.FC<ResultsProps> = ({ user, answers, timeUsed, questions, onRetry, onBackToDashboard, userRole, simulacro, blockId, isQuickTest = false, quickTestName = '' }) => {
   const [showReview, setShowReview] = useState(false);
   const [filterArea, setFilterArea] = useState<string>('Todas');
   const [showHistory, setShowHistory] = useState(false);
@@ -102,7 +104,12 @@ const Results: React.FC<ResultsProps> = ({ user, answers, timeUsed, questions, o
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold">Resultados</h1>
+              <h1 className="text-2xl md:text-3xl font-bold">
+                {isQuickTest ? '⚡ Prueba Rápida' : 'Resultados'}
+              </h1>
+              {isQuickTest && quickTestName && (
+                <p className="text-purple-200 text-sm mt-1">{quickTestName}</p>
+              )}
               <p className="text-blue-200 mt-1">{user.profile.fullName} — {simulacro?.institution || 'SimulacrUx'}</p>
               <div className="flex items-center gap-2 mt-2 flex-wrap">
                 <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs border ${roleInfo.bg} ${roleInfo.color} ${roleInfo.border}`}>

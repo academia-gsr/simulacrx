@@ -11,9 +11,10 @@ interface DashboardProps {
   onSelectBlock: (simulacroId: string, blockId: string, questions: Question[]) => void;
   onLogout: () => void;
   onOpenProfile: () => void;
+  onOpenQuickTest: () => void;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ simulacros, user, onSelectBlock, onLogout, onOpenProfile }) => {
+const Dashboard: React.FC<DashboardProps> = ({ simulacros, user, onSelectBlock, onLogout, onOpenProfile, onOpenQuickTest }) => {
   const [selectedSimulacro, setSelectedSimulacro] = useState<string | null>(null);
   const [showBugReports, setShowBugReports] = useState(false);
   const roleInfo = user ? getRoleInfo(user.role) : getRoleInfo('guest');
@@ -172,14 +173,11 @@ const Dashboard: React.FC<DashboardProps> = ({ simulacros, user, onSelectBlock, 
                   ⚡ Pruebas Rápidas Personalizadas
                 </h3>
                 <p className="text-purple-100/80 text-sm mb-3">
-                  Como usuario PLUS, puedes crear pruebas rápidas de 5, 10 o 15 preguntas filtradas por asignatura, tema o subtema específico.
+                  Como usuario PLUS, puedes crear pruebas rápidas de 5, 10 o 15 preguntas filtradas por asignatura. Las preguntas se seleccionan aleatoriamente de los bancos a los que tienes acceso.
                 </p>
                 <button
-                  onClick={() => {
-                    // TODO: Implementar modal de selección de área/tema/cantidad
-                    alert('Funcionalidad de Pruebas Rápidas en desarrollo');
-                  }}
-                  className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold px-6 py-2.5 rounded-lg hover:opacity-90 transition"
+                  onClick={onOpenQuickTest}
+                  className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold px-6 py-2.5 rounded-lg hover:opacity-90 transition shadow-lg"
                 >
                   🎯 Crear Prueba Rápida
                 </button>

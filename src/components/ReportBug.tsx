@@ -106,10 +106,10 @@ const ReportBug: React.FC<ReportBugProps> = ({
 
       {/* Modal de reporte */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
             {/* Header */}
-            <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white p-5 rounded-t-2xl">
+            <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white p-5 rounded-t-2xl sticky top-0">
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-lg font-bold flex items-center gap-2">
@@ -120,11 +120,18 @@ const ReportBug: React.FC<ReportBugProps> = ({
                   </p>
                 </div>
                 <button
-                  onClick={() => setIsOpen(false)}
-                  className="text-white/70 hover:text-white transition"
+                  onClick={() => {
+                    setIsOpen(false);
+                    setSubmitted(false);
+                    setDescription('');
+                    setType('incompleta');
+                  }}
+                  className="bg-white/20 hover:bg-white/30 rounded-full p-2 transition-all hover:scale-110"
+                  aria-label="Cerrar"
+                  title="Cerrar"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               </div>
@@ -139,9 +146,20 @@ const ReportBug: React.FC<ReportBugProps> = ({
                     </svg>
                   </div>
                   <h3 className="text-lg font-bold text-gray-800 mb-2">¡Reporte enviado!</h3>
-                  <p className="text-gray-600 text-sm">
+                  <p className="text-gray-600 text-sm mb-6">
                     Gracias por tu reporte. Será revisado por el equipo técnico.
                   </p>
+                  <button
+                    onClick={() => {
+                      setIsOpen(false);
+                      setSubmitted(false);
+                      setDescription('');
+                      setType('incompleta');
+                    }}
+                    className="bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold px-6 py-2.5 rounded-lg hover:opacity-90 transition shadow-md"
+                  >
+                    ✓ Cerrar
+                  </button>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -200,17 +218,21 @@ const ReportBug: React.FC<ReportBugProps> = ({
                   {/* Botones */}
                   <div className="flex gap-3 pt-2">
                     <button
-                      type="submit"
-                      className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold py-2.5 rounded-lg hover:opacity-90 transition"
+                      type="button"
+                      onClick={() => {
+                        setIsOpen(false);
+                        setDescription('');
+                        setType('incompleta');
+                      }}
+                      className="flex-1 px-4 py-2.5 rounded-lg border-2 border-gray-300 text-gray-700 font-bold hover:bg-gray-50 transition"
                     >
-                      Enviar Reporte
+                      ✕ Cancelar
                     </button>
                     <button
-                      type="button"
-                      onClick={() => setIsOpen(false)}
-                      className="px-4 py-2.5 rounded-lg border border-gray-200 text-gray-700 font-medium hover:bg-gray-50 transition"
+                      type="submit"
+                      className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold py-2.5 rounded-lg hover:opacity-90 transition shadow-md"
                     >
-                      Cancelar
+                      ✓ Enviar Reporte
                     </button>
                   </div>
                 </form>
