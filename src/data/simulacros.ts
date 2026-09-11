@@ -1,7 +1,8 @@
 import { questionsDay1 } from '../../bancos/simulacro-01-uni/dia1-aptitud-humanidades';
 import { questionsDay2 } from '../../bancos/simulacro-01-uni/dia2-matematica';
 import { questionsDay3 } from '../../bancos/simulacro-01-uni/dia3-fisica-quimica';
-import { questionsSimulacro02 } from '../../bancos/simulacro-02-esmgp/banco1-completo';
+import { questionsDay1 as questionsSimulacro02Day1 } from '../../bancos/simulacro-02-esmgp/dia1-aptitud-academica';
+import { questionsDay2 as questionsSimulacro02Day2 } from '../../bancos/simulacro-02-esmgp/dia2-conocimientos';
 import { Question } from '../types';
 
 export interface Simulacro {
@@ -113,17 +114,27 @@ export const simulacros: Simulacro[] = [
     institution: 'ESMGP',
     project: '4. Simulación Exámenes PRE',
     version: 'v2.0',
-    totalQuestions: 100,
-    duration: 120,
+    totalQuestions: 200,
+    duration: 240,
     status: 'active',
     theme: mgpTheme,
     blocks: [
       {
-        id: 'sim02-block1',
-        name: 'Banco 1 - Completo',
-        day: 'Único',
-        description: 'R. Matemático, R. Verbal, Geometría, Aritmética, Álgebra, Trigonometría, Física, Química, Lengua y Literatura, Informática, Historia, Geografía, Inglés',
-        questions: questionsSimulacro02,
+        id: 'sim02-day1',
+        name: 'Examen de Aptitud Académica',
+        day: 'Día 1',
+        description: 'Razonamiento Matemático (50 preguntas) + Razonamiento Verbal (50 preguntas)',
+        questions: questionsSimulacro02Day1,
+        duration: 120,
+        status: 'active',
+        questionCount: 100
+      },
+      {
+        id: 'sim02-day2',
+        name: 'Examen de Conocimientos',
+        day: 'Día 2',
+        description: 'Geometría, Aritmética, Álgebra, Trigonometría, Física, Química, Lengua y Literatura, Informática, Historia, Geografía, Inglés',
+        questions: questionsSimulacro02Day2,
         duration: 120,
         status: 'active',
         questionCount: 100
