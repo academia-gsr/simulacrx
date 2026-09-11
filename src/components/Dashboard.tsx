@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Simulacro, Block, APP_CONFIG } from '../data/simulacros';
 import { Question, User } from '../types';
 import { getRoleInfo } from '../data/users';
+import AdminBugReports from './AdminBugReports';
+import { getReports } from './ReportBug';
 
 interface DashboardProps {
   simulacros: Simulacro[];
@@ -13,9 +15,11 @@ interface DashboardProps {
 
 const Dashboard: React.FC<DashboardProps> = ({ simulacros, user, onSelectBlock, onLogout, onOpenProfile }) => {
   const [selectedSimulacro, setSelectedSimulacro] = useState<string | null>(null);
+  const [showBugReports, setShowBugReports] = useState(false);
   const roleInfo = user ? getRoleInfo(user.role) : getRoleInfo('guest');
   const isGuest = !user || user.role === 'guest';
   const isAdmin = user?.role === 'admin';
+  const pendingReports = isAdmin ? getReports().filter(r => r.status === 'pending').length : 0;
 
   const canAccessSimulacro = (sim: Simulacro): boolean => {
     if (isAdmin) return true;
@@ -309,7 +313,25 @@ const Dashboard: React.FC<DashboardProps> = ({ simulacros, user, onSelectBlock, 
                 <strong>Próximas iteraciones:</strong> Login con Google + Pagos PLIN/YAPE para automatizar upgrades de Invitado → BASIC/PLUS.
               </p>
             </div>
+            
+            {/* Botón para ver reportes de fallas */}
+            <button
+              onClick={() => setShowBugReports(true)}
+              className="mt-4 w-full bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold py-3 rounded-xl hover:opacity-90 transition flex items-center justify-center gap-2"
+            >
+              🐛 Ver Reportes de Fallas
+              {pendingReports > 0 && (
+                <span className="bg-white text-orange-600 px-2 py-0.5 rounded-full text-xs font-bold">
+                  {pendingReports} pendientes
+                </span>
+              )}
+            </button>
           </div>
+        )}
+
+        {/* Modal de Reportes de Fallas */}
+        {showBugReports && isAdmin && (
+          <AdminBugReports onClose={() => setShowBugReports(false)} />
         )}
 
         {/* Footer */}

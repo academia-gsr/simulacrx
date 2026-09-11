@@ -1,7 +1,7 @@
-import { questionsDay1 } from './simulacro01-day1';
-import { questionsDay2 } from './simulacro01-day2';
-import { questionsDay3 } from './simulacro01-day3';
-import { questionsSimulacro02 } from './simulacro02-questions';
+import { questionsDay1 } from '../../bancos/simulacro-01-uni/dia1-aptitud-humanidades';
+import { questionsDay2 } from '../../bancos/simulacro-01-uni/dia2-matematica';
+import { questionsDay3 } from '../../bancos/simulacro-01-uni/dia3-fisica-quimica';
+import { questionsSimulacro02 } from '../../bancos/simulacro-02-esmgp/banco1-completo';
 import { Question } from '../types';
 
 export interface Simulacro {

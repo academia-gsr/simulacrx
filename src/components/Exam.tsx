@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Question, User } from '../types';
 import { Simulacro, Block } from '../data/simulacros';
+import ReportBug from './ReportBug';
 
 interface ExamProps {
   user: User;
@@ -288,6 +289,15 @@ const Exam: React.FC<ExamProps> = ({ user, questions, onFinish, simulacro, block
           </div>
         </div>
       )}
+
+      {/* Botón de Reportar Falla - No invasivo */}
+      <ReportBug
+        simulacroId={simulacro?.id || ''}
+        blockId={block?.id || ''}
+        questionId={question.id}
+        questionNumber={currentQuestion + 1}
+        userId={user.id}
+      />
     </div>
   );
 };
