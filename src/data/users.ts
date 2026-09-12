@@ -1,74 +1,45 @@
 import { User } from '../types';
 
-// Usuarios piloto del sistema SimulacrUx
 export const pilotUsers: User[] = [
   {
     id: 'admin-001',
     username: 'Admin',
     password: 'Admin1234',
     role: 'admin',
-    displayName: 'Administrador del Sistema',
+    displayName: 'Administrador',
     allowedSimulacros: ['sim01', 'sim02'],
     profile: {
-      fullName: 'Administrador SimulacrUx',
+      fullName: 'Administrador del Sistema',
       phone: '999999999',
-      email: 'admin@simulacrx.com'
+      email: 'admin@simulacrx.com',
     },
     attempts: [],
   },
   {
-    id: 'plus-uni-001',
+    id: 'plus-001',
     username: 'P_UNI_PLUS',
     password: 'Puni1234',
     role: 'plus',
-    displayName: 'Usuario PLUS - UNI',
+    displayName: 'Usuario PLUS UNI',
     allowedSimulacros: ['sim01'],
     profile: {
-      fullName: 'Postulante UNI PLUS',
+      fullName: 'Juan Pérez García',
       phone: '987654321',
-      email: 'plus.uni@simulacrx.com'
+      email: 'juan.perez@email.com',
     },
     attempts: [],
   },
   {
-    id: 'plus-mgp-001',
-    username: 'P_MGP_PLUS',
-    password: 'Pmgp1234',
-    role: 'plus',
-    displayName: 'Usuario PLUS - Marina',
-    allowedSimulacros: ['sim02'],
-    profile: {
-      fullName: 'Postulante Marina PLUS',
-      phone: '987654322',
-      email: 'plus.mgp@simulacrx.com'
-    },
-    attempts: [],
-  },
-  {
-    id: 'basic-uni-001',
+    id: 'basic-001',
     username: 'P_UNI_BASIC',
     password: 'Puni1234',
     role: 'basic',
-    displayName: 'Usuario BASIC - UNI',
+    displayName: 'Usuario BASIC UNI',
     allowedSimulacros: ['sim01'],
     profile: {
-      fullName: 'Postulante UNI BASIC',
-      phone: '987654323',
-      email: 'basic.uni@simulacrx.com'
-    },
-    attempts: [],
-  },
-  {
-    id: 'basic-mgp-001',
-    username: 'P_MGP_BASIC',
-    password: 'Pmgp1234',
-    role: 'basic',
-    displayName: 'Usuario BASIC - Marina',
-    allowedSimulacros: ['sim02'],
-    profile: {
-      fullName: 'Postulante Marina BASIC',
-      phone: '987654324',
-      email: 'basic.mgp@simulacrx.com'
+      fullName: 'María López Torres',
+      phone: '912345678',
+      email: 'maria.lopez@email.com',
     },
     attempts: [],
   },
@@ -76,9 +47,9 @@ export const pilotUsers: User[] = [
 
 export const authenticateUser = (username: string, password: string): User | null => {
   const user = pilotUsers.find(
-    u => u.username.toLowerCase() === username.toLowerCase() && u.password === password
+    (u) => u.username.toLowerCase() === username.toLowerCase() && u.password === password
   );
-  return user ? { ...user } : null; // Retornar copia para no mutar el original
+  return user ? { ...user } : null;
 };
 
 export const getRoleInfo = (role: string) => {
@@ -117,7 +88,7 @@ export const getRoleInfo = (role: string) => {
         bg: 'bg-gray-100',
         border: 'border-gray-300',
         icon: '👤',
-        description: '10% de preguntas aleatorias de prueba',
+        description: '3 intentos de prueba',
       };
     default:
       return {
@@ -131,25 +102,36 @@ export const getRoleInfo = (role: string) => {
   }
 };
 
-// Persistencia de intentos en localStorage
-const STORAGE_KEY = 'simulacrx_user_data';
+export const getMaxAttempts = (role: string): number => {
+  switch (role) {
+    case 'admin':
+    case 'plus':
+      return Infinity;
+    case 'basic':
+      return 1;
+    case 'guest':
+      return 3;
+    default:
+      return 0;
+  }
+};
 
 export const saveUserData = (userId: string, profile: User['profile'], attempts: User['attempts']) => {
   try {
-    const allData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    const allData = JSON.parse(localStorage.getItem('simulacrx_user_data') || '{}');
     allData[userId] = { profile, attempts };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(allData));
+    localStorage.setItem('simulacrx_user_data', JSON.stringify(allData));
   } catch (e) {
-    console.error('Error saving user data:', e);
+    console.error('Error saving user data', e);
   }
 };
 
 export const loadUserData = (userId: string): { profile?: User['profile']; attempts?: User['attempts'] } => {
   try {
-    const allData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    const allData = JSON.parse(localStorage.getItem('simulacrx_user_data') || '{}');
     return allData[userId] || {};
   } catch (e) {
-    console.error('Error loading user data:', e);
+    console.error('Error loading user data', e);
     return {};
   }
 };

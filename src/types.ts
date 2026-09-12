@@ -8,35 +8,7 @@ export interface Question {
   difficulty: 'fácil' | 'medio' | 'difícil';
 }
 
-export interface ExamState {
-  currentQuestion: number;
-  answers: (number | null)[];
-  timeRemaining: number;
-  isFinished: boolean;
-  startedAt: Date | null;
-  finishedAt: Date | null;
-}
-
-export interface UserProfile {
-  fullName: string;
-  phone: string;
-  email: string;
-}
-
 export type UserRole = 'admin' | 'plus' | 'basic' | 'guest';
-
-export interface Attempt {
-  id: string;
-  blockId: string;
-  simulacroId: string;
-  date: string; // ISO string
-  answers: (number | null)[];
-  timeUsed: number; // segundos
-  score: number; // porcentaje
-  correct: number;
-  total: number;
-  questionOrder: number[]; // IDs de preguntas en el orden que se presentaron
-}
 
 export interface User {
   id: string;
@@ -45,13 +17,51 @@ export interface User {
   role: UserRole;
   displayName: string;
   allowedSimulacros: string[];
-  profile: UserProfile;
+  profile: {
+    fullName: string;
+    phone: string;
+    email: string;
+  };
   attempts: Attempt[];
-  expiresAt?: string;
-  promoMessage?: string;
 }
 
-export interface AuthState {
-  isAuthenticated: boolean;
-  user: User | null;
+export interface Attempt {
+  id: string;
+  blockId: string;
+  simulacroId: string;
+  date: string;
+  answers: (number | null)[];
+  timeUsed: number;
+  score: number;
+  correct: number;
+  total: number;
+  questionOrder: number[];
+}
+
+export interface Block {
+  id: string;
+  name: string;
+  day: string;
+  description: string;
+  questions: Question[];
+  duration: number;
+  status: 'active' | 'pending';
+  questionCount: number;
+}
+
+export interface Simulacro {
+  id: string;
+  number: string;
+  title: string;
+  subtitle: string;
+  institution: string;
+  totalQuestions: number;
+  duration: number;
+  status: 'active' | 'pending';
+  theme: {
+    primary: string;
+    gradient: string;
+    headerBg: string;
+  };
+  blocks: Block[];
 }
